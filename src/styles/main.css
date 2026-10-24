@@ -52,6 +52,16 @@ body {
   font-weight: 800;
   font-size: 18px;
 }
+.ekc-logo {
+  display: block;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 6px;
+  flex: 0 0 auto;
+}
+.ekc-logo-sidebar { width: 76px; height: 76px; }
+.ekc-logo-auth { width: 82px; height: 82px; }
+.ekc-logo-header { width: 58px; height: 58px; }
 .nav-label {
   font-size: 10px;
   letter-spacing: .11em;
@@ -1350,6 +1360,7 @@ td b {
   gap: 11px;
   margin-bottom: 25px;
 }
+.signin-brand .ekc-logo-auth { margin-right: 2px; }
 .signin-brand b {
   font: 800 16px Manrope,sans-serif;
   color: #152235;

@@ -101,9 +101,9 @@ export default function StudentPortal() {
     <main className="portal-page">
       <header className="portal-top">
         <a className="signin-brand portal-brand" href="/student">
-          <div className="brand-mark">C</div>
+          <img className="ekc-logo ekc-logo-header" src="/assets/ekc-group-logo.png" alt="EKC Group — East Kent Colleges Group" />
           <div>
-            <b>Campus Helpdesk</b>
+            <b>Student Helpdesk</b>
             <small>Student Support Desk</small>
           </div>
         </a>

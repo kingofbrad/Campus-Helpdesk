@@ -61,8 +61,8 @@ function AuthStatusPage({ eyebrow, title, message }) {
 function Brand() {
   return (
     <div className="signin-brand">
-      <div className="brand-mark">C</div>
-      <div><b>Campus Helpdesk</b><small>Student Support Desk</small></div>
+      <img className="ekc-logo ekc-logo-auth" src="/assets/ekc-group-logo.png" alt="EKC Group — East Kent Colleges Group" />
+      <div><b>Student Helpdesk</b><small>Student Support Desk</small></div>
     </div>
   );
 }

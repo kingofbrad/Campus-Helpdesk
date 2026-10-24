@@ -14,8 +14,8 @@ export default function OperatorSidebar({ page, openCount, technicianName, initi
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-mark">C</div>
-        <div><b>EKC Student Helpdesk</b><small>Student Support Desk</small></div>
+        <img className="ekc-logo ekc-logo-sidebar" src="/assets/ekc-group-logo.png" alt="EKC Group — East Kent Colleges Group" />
+        <div><b>Student Helpdesk</b><small>Student Support Desk</small></div>
       </div>
       <div className="nav-label">Workspace</div>
       <NavigationItem icon={LuLayoutDashboard} label="Ticket queue" count={openCount} active={page === "queue"} onClick={() => onNavigate("queue")} />
