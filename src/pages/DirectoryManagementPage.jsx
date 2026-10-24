@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@chakra-ui/react";
 import PageHeading from "../components/shared/PageHeading.jsx";
+import EntraTechnicianSearch from "../components/operator/EntraTechnicianSearch.jsx";
 import {
   createDirectorySite,
   createDirectoryTechnician,
@@ -18,6 +19,7 @@ export default function DirectoryManagementPage({ instance, account }) {
   const [notice, setNotice] = useState("");
   const [editingSite, setEditingSite] = useState(null);
   const [editingTechnician, setEditingTechnician] = useState(null);
+  const [selectedEntraUser, setSelectedEntraUser] = useState(null);
 
   const loadDirectory = useCallback(async () => {
     setLoading(true);
@@ -59,11 +61,18 @@ export default function DirectoryManagementPage({ instance, account }) {
 
   const addTechnician = (event) => {
     event.preventDefault();
+    if (!selectedEntraUser) {
+      setError("Search Entra and select the technician account before adding it.");
+      return;
+    }
     const values = Object.fromEntries(new FormData(event.currentTarget));
+    values.display_name = selectedEntraUser.displayName;
+    values.entra_object_id = selectedEntraUser.id;
     values.is_active = true;
     values.can_view_all_tickets = event.currentTarget.elements.can_view_all_tickets.checked;
     save(() => createDirectoryTechnician(instance, account, values), "Technician added.");
     event.currentTarget.reset();
+    setSelectedEntraUser(null);
   };
 
   return (
@@ -106,11 +115,10 @@ export default function DirectoryManagementPage({ instance, account }) {
           <section className="panel directory-panel">
             <div className="panel-heading"><div><b>Add a technician</b><small>They must already exist as a member in this Entra tenant.</small></div></div>
             <form className="directory-form technician-form" onSubmit={addTechnician}>
-              <label>Display name<input name="display_name" placeholder="Canterbury Technician" required maxLength="120" /></label>
-              <label>Entra object ID<input name="entra_object_id" placeholder="00000000-0000-0000-0000-000000000000" required pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" /></label>
+              <div className="directory-form-span-two"><EntraTechnicianSearch instance={instance} account={account} selectedUser={selectedEntraUser} onSelect={setSelectedEntraUser} /></div>
               <label>Site<select name="site_id" required defaultValue=""><option value="" disabled>Select a site</option>{directory.sites.map((site) => <option key={site.id} value={site.id}>{site.name}</option>)}</select></label>
               <label className="directory-check"><input name="can_view_all_tickets" type="checkbox" /> Can view tickets across all sites</label>
-              <Button type="submit" colorPalette="blue" disabled={saving || !directory.sites.length}>{saving ? "Saving…" : "Add technician"}</Button>
+              <Button type="submit" colorPalette="blue" disabled={saving || !directory.sites.length || !selectedEntraUser}>{saving ? "Saving…" : "Add technician"}</Button>
             </form>
             <p className="directory-hint">Tenant ID: <code>{directory.tenantId || "Unavailable"}</code> (filled in automatically)</p>
           </section>
