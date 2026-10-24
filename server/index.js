@@ -149,7 +149,7 @@ async function supabase(path, options = {}) {
 async function requireTechnician(req) {
   const identity = await verifyAccessToken(req);
   const query = new URLSearchParams({
-    select: "id,display_name,site_id,can_view_all_tickets",
+    select: "id,display_name,site_id,can_view_all_tickets,can_manage_directory",
     entra_tenant_id: `eq.${identity.tenantId}`,
     entra_object_id: `eq.${identity.objectId}`,
     is_active: "eq.true",
@@ -162,6 +162,34 @@ async function requireTechnician(req) {
     throw error;
   }
   return { ...rows[0], tenantId: identity.tenantId };
+}
+
+function requireDirectoryAdmin(technician) {
+  if (!technician.can_manage_directory) {
+    const error = new Error("You do not have permission to manage helpdesk sites or technicians.");
+    error.status = 403;
+    throw error;
+  }
+}
+
+function invalid(message) {
+  const error = new Error(message);
+  error.status = 400;
+  return error;
+}
+
+function requiredText(value, label, maxLength) {
+  const text = String(value || "").trim();
+  if (!text || text.length > maxLength) throw invalid(`${label} is required and must be ${maxLength} characters or fewer.`);
+  return text;
+}
+
+async function getDirectorySites() {
+  return supabase(`sites?${new URLSearchParams({ select: "id,code,name,created_at", order: "name.asc" })}`);
+}
+
+async function getDirectoryTechnicians() {
+  return supabase(`technicians?${new URLSearchParams({ select: "id,entra_tenant_id,entra_object_id,display_name,site_id,is_active,can_view_all_tickets,sites(name)", order: "display_name.asc" })}`);
 }
 
 const ticketSelect = "id,ticket_number,ticket_reference,requester_name,requester_email,site_id,title,description,category,priority,status,assigned_technician_id,created_at,updated_at,sites(name),technicians(display_name),ticket_activity(note,created_at)";
@@ -340,6 +368,79 @@ export async function handleRequest(req, res) {
     }
     const technician = await requireTechnician(req);
 
+    if (url.pathname.startsWith("/api/admin/")) {
+      requireDirectoryAdmin(technician);
+      if (req.method === "GET" && url.pathname === "/api/admin/directory") {
+        const [sites, technicians] = await Promise.all([getDirectorySites(), getDirectoryTechnicians()]);
+        return json(res, 200, { sites, technicians, tenantId: technician.tenantId });
+      }
+      if (req.method === "POST" && url.pathname === "/api/admin/sites") {
+        const input = await readBody(req);
+        const code = requiredText(input.code, "Site code", 40).toLowerCase();
+        const name = requiredText(input.name, "Site name", 100);
+        if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(code)) throw invalid("Use lowercase letters, numbers, and single hyphens for the site code.");
+        const rows = await supabase("sites?select=id,code,name", {
+          method: "POST", headers: { Prefer: "return=representation" },
+          body: JSON.stringify({ code, name }),
+        });
+        return json(res, 201, rows[0]);
+      }
+      const siteMatch = url.pathname.match(/^\/api\/admin\/sites\/([0-9a-f-]+)$/i);
+      if (req.method === "PATCH" && siteMatch) {
+        const input = await readBody(req);
+        const updates = {};
+        if (input.code !== undefined) {
+          updates.code = requiredText(input.code, "Site code", 40).toLowerCase();
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(updates.code)) throw invalid("Use lowercase letters, numbers, and single hyphens for the site code.");
+        }
+        if (input.name !== undefined) updates.name = requiredText(input.name, "Site name", 100);
+        if (!Object.keys(updates).length) throw invalid("Provide a site name or code to update.");
+        const rows = await supabase(`sites?${new URLSearchParams({ id: `eq.${siteMatch[1]}`, select: "id,code,name" })}`, {
+          method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify(updates),
+        });
+        if (!rows?.length) return json(res, 404, { error: "That site could not be found." });
+        return json(res, 200, rows[0]);
+      }
+      if (req.method === "POST" && url.pathname === "/api/admin/technicians") {
+        const input = await readBody(req);
+        const entraObjectId = requiredText(input.entra_object_id, "Entra object ID", 100).toLowerCase();
+        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(entraObjectId)) throw invalid("Enter a valid Entra object ID in GUID format.");
+        const siteId = requiredText(input.site_id, "Site", 100);
+        const rows = await supabase("technicians?select=id,entra_tenant_id,entra_object_id,display_name,site_id,is_active,can_view_all_tickets,sites(name)", {
+          method: "POST", headers: { Prefer: "return=representation" },
+          body: JSON.stringify({
+            entra_tenant_id: technician.tenantId,
+            entra_object_id: entraObjectId,
+            display_name: requiredText(input.display_name, "Display name", 120),
+            site_id: siteId,
+            is_active: input.is_active !== false,
+            can_view_all_tickets: input.can_view_all_tickets === true,
+          }),
+        });
+        return json(res, 201, rows[0]);
+      }
+      const technicianMatch = url.pathname.match(/^\/api\/admin\/technicians\/([0-9a-f-]+)$/i);
+      if (req.method === "PATCH" && technicianMatch) {
+        const input = await readBody(req);
+        const updates = {};
+        if (input.entra_object_id !== undefined) {
+          updates.entra_object_id = requiredText(input.entra_object_id, "Entra object ID", 100).toLowerCase();
+          if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(updates.entra_object_id)) throw invalid("Enter a valid Entra object ID in GUID format.");
+        }
+        if (input.display_name !== undefined) updates.display_name = requiredText(input.display_name, "Display name", 120);
+        if (input.site_id !== undefined) updates.site_id = requiredText(input.site_id, "Site", 100);
+        if (input.is_active !== undefined) updates.is_active = Boolean(input.is_active);
+        if (input.can_view_all_tickets !== undefined) updates.can_view_all_tickets = Boolean(input.can_view_all_tickets);
+        if (!Object.keys(updates).length) throw invalid("Provide technician details to update.");
+        const rows = await supabase(`technicians?${new URLSearchParams({ id: `eq.${technicianMatch[1]}`, select: "id,entra_tenant_id,entra_object_id,display_name,site_id,is_active,can_view_all_tickets,sites(name)" })}`, {
+          method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify(updates),
+        });
+        if (!rows?.length) return json(res, 404, { error: "That technician could not be found." });
+        return json(res, 200, rows[0]);
+      }
+      return json(res, 404, { error: "Not found." });
+    }
+
     const technicianCommentsMatch = url.pathname.match(/^\/api\/tickets\/([0-9a-f-]+)\/comments$/i);
     if (technicianCommentsMatch && ["GET", "POST"].includes(req.method)) {
       const ticket = req.method === "GET"
@@ -367,7 +468,9 @@ export async function handleRequest(req, res) {
     if (req.method === "GET" && url.pathname === "/api/operator/profile") {
       return json(res, 200, {
         id: technician.id,
+        tenantId: technician.tenantId,
         canViewAllTickets: Boolean(technician.can_view_all_tickets),
+        canManageDirectory: Boolean(technician.can_manage_directory),
       });
     }
 
