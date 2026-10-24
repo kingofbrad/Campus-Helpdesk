@@ -1574,6 +1574,88 @@ td b {
   color: #1d63d8;
   font-weight: 700;
 }
+.directory-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  border-bottom: 1px solid #e4eaf0;
+  padding-bottom: 11px;
+}
+.directory-tabs button:not(.chakra-button) {
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: #586a80;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.directory-tabs button.active {
+  background: #e7f4f2;
+  color: #127b75;
+  font-weight: 700;
+}
+.directory-tabs button span {
+  margin-left: 5px;
+  opacity: .7;
+}
+.directory-tabs .chakra-button { margin-left: auto; }
+.directory-panel { margin-bottom: 16px; }
+.directory-form {
+  display: grid;
+  gap: 12px;
+  padding: 16px 20px 20px;
+}
+.directory-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #405067;
+  font-size: 12px;
+  font-weight: 650;
+}
+.directory-form input,.directory-form select,.directory-inline {
+  width: 100%;
+  min-height: 37px;
+  border: 1px solid #dfe5ec;
+  border-radius: 7px;
+  background: #fff;
+  padding: 8px 10px;
+  color: #152235;
+  font: 400 12px 'DM Sans',sans-serif;
+  outline: none;
+}
+.directory-form input:focus,.directory-form select:focus,.directory-inline:focus {
+  border-color: #5276e8;
+  box-shadow: 0 0 0 3px #5276e81c;
+}
+.site-form { grid-template-columns: minmax(180px,1fr) minmax(150px,.7fr) auto; align-items: end; }
+.technician-form { grid-template-columns: repeat(2,minmax(180px,1fr)); align-items: end; }
+.technician-form button { justify-self: start; }
+.directory-form label.directory-check,.directory-check {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  min-height: 37px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.directory-check input { width: 15px; min-height: 15px; accent-color: #3b61e8; }
+.directory-hint { margin: -8px 20px 17px; color: #728198; font-size: 11px; }
+.directory-hint code,.directory-panel td code { font-size: 11px; }
+.directory-actions { white-space: nowrap; text-align: right; }
+.directory-actions button { border: 0; background: transparent; color: #2458d8; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; margin-left: 10px; }
+.directory-actions button:disabled { opacity: .55; cursor: wait; }
+.directory-object-id { display: block; margin-top: 4px; max-width: 270px; overflow-wrap: anywhere; color: #8190a2; font-size: 10px; }
+.directory-edit-fields { display: grid; gap: 5px; min-width: 190px; }
+.directory-success { margin-bottom: 14px; border: 1px solid #cde9dc; border-radius: 8px; background: #effaf5; padding: 10px 13px; color: #23734a; font-size: 12px; }
+@media(max-width:760px) {
+  .site-form,.technician-form { grid-template-columns: 1fr; }
+  .directory-tabs { overflow-x: auto; }
+}
 @media(max-width:600px) {
   .conversation-modal {
     padding: 17px;
