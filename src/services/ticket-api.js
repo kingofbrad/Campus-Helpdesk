@@ -3,6 +3,14 @@ import { InteractionRequiredAuthError } from "@azure/msal-browser";
 
 export const databaseMode = apiScopes.length > 0;
 
+function asRows(value, label) {
+  if (Array.isArray(value)) return value;
+  // A single related row can occasionally be returned as an object by an API
+  // adapter. Accept that shape for list views while rejecting error envelopes.
+  if (value && typeof value === "object" && ("id" in value || "ticket_id" in value)) return [value];
+  throw new Error(`The helpdesk API returned an unexpected ${label} response. Refresh the page, and contact the demo owner if it continues.`);
+}
+
 async function request(instance, account, path, options = {}) {
   if (!databaseMode) throw new Error("Database mode is not configured yet.");
   let accessToken;
@@ -37,12 +45,17 @@ function mapTicket(row) {
     escalated: "Escalated",
   };
   const priorityLabels = { low: "Low", normal: "Normal", high: "High" };
-  const student = row.requester_name;
+  const student = row.requester_name || "Unknown requester";
   const initials = student.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
   const created = new Date(row.updated_at);
   const submittedAt = new Date(row.created_at);
   const updated = Number.isNaN(created.getTime()) ? "Recently" : created.toLocaleString();
   const submitted = Number.isNaN(submittedAt.getTime()) ? "Recently" : submittedAt.toLocaleString();
+  const activityRows = Array.isArray(row.ticket_activity)
+    ? row.ticket_activity
+    : row.ticket_activity && typeof row.ticket_activity === "object"
+      ? [row.ticket_activity]
+      : [];
   return {
     id: row.ticket_reference || `SH-${String(row.ticket_number).padStart(4, "0")}`,
     databaseId: row.id,
@@ -59,12 +72,12 @@ function mapTicket(row) {
     updated,
     submitted,
     description: row.description,
-    notes: (row.ticket_activity || []).map((item) => item.note),
+    notes: activityRows.map((item) => item.note).filter(Boolean),
   };
 }
 
 export async function getTickets(instance, account) {
-  const rows = await request(instance, account, "/tickets");
+  const rows = asRows(await request(instance, account, "/tickets"), "ticket list");
   return rows.map(mapTicket);
 }
 
@@ -73,7 +86,7 @@ export async function getOperatorProfile(instance, account) {
 }
 
 export async function getStudentTickets(instance, account) {
-  const rows = await request(instance, account, "/student/tickets");
+  const rows = asRows(await request(instance, account, "/student/tickets"), "student ticket list");
   return rows.map(mapTicket);
 }
 
@@ -111,7 +124,7 @@ export async function updateTicketDetails(instance, account, ticket, updates) {
 
 export async function getTicketComments(instance, account, ticket, audience) {
   const prefix = audience === "student" ? "/student/tickets/" : "/tickets/";
-  const rows = await request(instance, account, `${prefix}${encodeURIComponent(ticket.databaseId)}/comments`);
+  const rows = asRows(await request(instance, account, `${prefix}${encodeURIComponent(ticket.databaseId)}/comments`), "ticket comments");
   return rows.map((row) => ({
     id: row.id,
     authorType: row.author_type,
@@ -123,10 +136,10 @@ export async function getTicketComments(instance, account, ticket, audience) {
 
 export async function addTicketComment(instance, account, ticket, audience, message) {
   const prefix = audience === "student" ? "/student/tickets/" : "/tickets/";
-  const rows = await request(instance, account, `${prefix}${encodeURIComponent(ticket.databaseId)}/comments`, {
+  const rows = asRows(await request(instance, account, `${prefix}${encodeURIComponent(ticket.databaseId)}/comments`, {
     method: "POST",
     body: JSON.stringify({ message }),
-  });
+  }), "created comment");
   return rows.map((row) => ({
     id: row.id,
     authorType: row.author_type,
@@ -137,7 +150,7 @@ export async function addTicketComment(instance, account, ticket, audience, mess
 }
 
 export async function getStudentReplies(instance, account, since) {
-  const rows = await request(instance, account, `/ticket-replies?since=${encodeURIComponent(since)}`);
+  const rows = asRows(await request(instance, account, `/ticket-replies?since=${encodeURIComponent(since)}`), "student reply list");
   return rows.map((row) => ({
     id: row.id,
     kind: "reply",
@@ -160,4 +173,3 @@ export async function updateTicket(instance, account, ticket, action) {
     body: JSON.stringify({ action }),
   });
 }
-
