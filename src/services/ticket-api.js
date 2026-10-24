@@ -3,11 +3,11 @@ import { InteractionRequiredAuthError } from "@azure/msal-browser";
 
 export const databaseMode = apiScopes.length > 0;
 
-function asRows(value, label) {
+function asRows(value, label, identifyingFields = ["id", "ticket_id"]) {
   if (Array.isArray(value)) return value;
   // A single related row can occasionally be returned as an object by an API
   // adapter. Accept that shape for list views while rejecting error envelopes.
-  if (value && typeof value === "object" && ("id" in value || "ticket_id" in value)) return [value];
+  if (value && typeof value === "object" && identifyingFields.some((field) => field in value)) return [value];
   throw new Error(`The helpdesk API returned an unexpected ${label} response. Refresh the page, and contact the demo owner if it continues.`);
 }
 
@@ -95,7 +95,7 @@ export async function getSites() {
   const response = await fetch("/api/sites");
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || `Helpdesk API returned ${response.status}.`);
-  return data;
+  return asRows(data, "site list", ["code"]);
 }
 
 export async function submitTechnicianTicket(instance, account, ticket) {
