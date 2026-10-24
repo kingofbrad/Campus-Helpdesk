@@ -20,6 +20,7 @@ import {
 } from "../components/operator/WorkspaceDialogs.jsx";
 import { AuthRedirectPage, OperatorSignInPage, ProfileLoadingPage } from "../components/auth/OperatorAuthScreens.jsx";
 import { technicianInitials } from "../utils/helpdesk.js";
+import DirectoryManagementPage from "./DirectoryManagementPage.jsx";
 
 export default function OperatorWorkspace() {
   const identity = useTechnicianIdentity();
@@ -42,6 +43,7 @@ export default function OperatorWorkspace() {
     knowledge: "Knowledge base",
     mine: "My tickets",
     guidance: "Student guidance",
+    directory: "Sites & technicians",
   };
   const firstName = identity.technicianName.trim().split(/\s+/)[0];
   const selected = workspace.selected;
@@ -53,6 +55,7 @@ export default function OperatorWorkspace() {
         openCount={workspace.openCount}
         technicianName={identity.technicianName}
         initials={technicianInitials(identity.technicianName)}
+        canManageDirectory={workspace.canManageDirectory}
         onNavigate={workspace.changePage}
       />
       <Box flex="1" minW="0">
@@ -104,6 +107,9 @@ export default function OperatorWorkspace() {
             <MyTicketsPage tickets={workspace.myTickets} technicianName={identity.technicianName} onSelectTicket={workspace.setSelected} />
           )}
           {workspace.page === "guidance" && <StudentGuidancePage />}
+          {workspace.page === "directory" && workspace.canManageDirectory && (
+            <DirectoryManagementPage instance={identity.instance} account={activeAccount} />
+          )}
         </main>
       </Box>
 
