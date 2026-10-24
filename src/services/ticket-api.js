@@ -85,6 +85,26 @@ export async function getOperatorProfile(instance, account) {
   return request(instance, account, "/operator/profile");
 }
 
+export async function getDirectory(instance, account) {
+  return request(instance, account, "/admin/directory");
+}
+
+export async function createDirectorySite(instance, account, values) {
+  return request(instance, account, "/admin/sites", { method: "POST", body: JSON.stringify(values) });
+}
+
+export async function updateDirectorySite(instance, account, siteId, values) {
+  return request(instance, account, `/admin/sites/${encodeURIComponent(siteId)}`, { method: "PATCH", body: JSON.stringify(values) });
+}
+
+export async function createDirectoryTechnician(instance, account, values) {
+  return request(instance, account, "/admin/technicians", { method: "POST", body: JSON.stringify(values) });
+}
+
+export async function updateDirectoryTechnician(instance, account, technicianId, values) {
+  return request(instance, account, `/admin/technicians/${encodeURIComponent(technicianId)}`, { method: "PATCH", body: JSON.stringify(values) });
+}
+
 export async function getStudentTickets(instance, account) {
   const rows = asRows(await request(instance, account, "/student/tickets"), "student ticket list");
   return rows.map(mapTicket);
@@ -173,3 +193,4 @@ export async function updateTicket(instance, account, ticket, action) {
     body: JSON.stringify({ action }),
   });
 }
+
