@@ -55,7 +55,6 @@ body {
 .ekc-logo {
   display: block;
   object-fit: contain;
-  background: #fff;
   border-radius: 6px;
   flex: 0 0 auto;
 }
@@ -1745,4 +1744,3 @@ td b {
     font-size: 11px;
   }
 }
-
