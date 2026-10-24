@@ -339,6 +339,8 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     filteredTickets,
     queueTickets,
     canViewAllTickets,
+    canManageDirectory: Boolean(operatorProfile?.canManageDirectory),
+    tenantId: operatorProfile?.tenantId || "",
     isAssignedToMe,
     technicianId,
     displayAssignee,
