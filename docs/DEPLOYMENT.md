@@ -7,7 +7,7 @@ The app is a Vite React frontend with a Node.js ticket API. The frontend deploys
 - Keep `.env.local` out of Git. It contains the Supabase server secret and is ignored by `.gitignore`.
 - Use fictional test accounts and ticket data only. This is a portfolio demo, not an approved service for real student information.
 - Keep the Supabase secret key in Vercel's server environment settings. Never add it to a `VITE_` variable or commit it.
-- Add a dedicated subdomain such as `helpdesk.example.com` so the existing portfolio site stays untouched.
+- Use `helpdesk.brking.dev` as a dedicated subdomain so the existing portfolio site stays untouched.
 
 ## Connect the private GitHub repository
 
@@ -27,7 +27,7 @@ Set these in **Project Settings → Environment Variables**. Vercel applies envi
 | --- | --- |
 | `VITE_ENTRA_CLIENT_ID` | Client ID of the existing SPA app registration |
 | `VITE_ENTRA_AUTHORITY` | `https://login.microsoftonline.com/common/` for the current mixed-account test setup |
-| `VITE_ENTRA_REDIRECT_URI` | Deployed app origin with trailing slash, for example `https://helpdesk.example.com/` |
+| `VITE_ENTRA_REDIRECT_URI` | `https://helpdesk.brking.dev/` |
 | `VITE_ENTRA_API_SCOPE` | Custom API scope, for example `api://<API-app-client-id>/access_as_user` |
 | `ENTRA_API_CLIENT_ID` | Client ID of the separate Entra API app registration |
 | `ENTRA_TENANT_ID` | Demo Entra tenant ID |
@@ -42,9 +42,9 @@ In the SPA app registration, add the deployed origin as a **Single-page applicat
 
 ## Add your portfolio domain
 
-1. In Vercel **Project Settings → Domains**, add a dedicated host such as `helpdesk.yourdomain`.
+1. In Vercel **Project Settings → Domains**, add `helpdesk.brking.dev`.
 2. Follow the DNS record Vercel shows and create it with your domain provider. Do not change the portfolio's root-domain records.
-3. After Vercel confirms HTTPS, update `VITE_ENTRA_REDIRECT_URI` to `https://helpdesk.yourdomain/`.
+3. After Vercel confirms HTTPS, set `VITE_ENTRA_REDIRECT_URI` to `https://helpdesk.brking.dev/`.
 4. Add that exact redirect URI to the SPA registration, then redeploy.
 
 ## Demo access and limitations
