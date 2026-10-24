@@ -26,13 +26,23 @@ function RootApp() {
   return path === "/student" || path.startsWith("/student/") ? <StudentPortal /> : <App />;
 }
 
-createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <MsalProvider instance={msalInstance}>
-      <ChakraProvider value={defaultSystem}>
-        <RootApp />
-      </ChakraProvider>
-    </MsalProvider>
-  </React.StrictMode>
-);
+async function startApplication() {
+  // MSAL Browser 5 requires initialization to finish before any component
+  // can acquire tokens. MsalProvider processes the redirect after this point.
+  await msalInstance.initialize();
 
+  createRoot(document.getElementById("root")).render(
+    <React.StrictMode>
+      <MsalProvider instance={msalInstance}>
+        <ChakraProvider value={defaultSystem}>
+          <RootApp />
+        </ChakraProvider>
+      </MsalProvider>
+    </React.StrictMode>
+  );
+}
+
+startApplication().catch((error) => {
+  console.error("Could not initialize Microsoft sign-in.", error);
+  document.getElementById("root").textContent = "Microsoft sign-in could not be initialized. Please refresh the page or contact the demo owner.";
+});
