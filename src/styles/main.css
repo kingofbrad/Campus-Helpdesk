@@ -1633,7 +1633,21 @@ td b {
 }
 .site-form { grid-template-columns: minmax(180px,1fr) minmax(150px,.7fr) auto; align-items: end; }
 .technician-form { grid-template-columns: repeat(2,minmax(180px,1fr)); align-items: end; }
+.directory-form-span-two { grid-column: 1 / -1; }
 .technician-form button { justify-self: start; }
+.entra-technician-search { position: relative; display: grid; gap: 6px; }
+.entra-technician-search>label { display: grid; gap: 6px; }
+.entra-technician-search>small { color: #77869a; font-size: 10px; font-weight: 400; }
+.entra-technician-search .directory-search-input { position: relative; }
+.entra-technician-search .directory-search-input>svg { position: absolute; z-index: 1; top: 50%; left: 11px; transform: translateY(-50%); color: #8090a3; }
+.entra-technician-search .directory-search-input input { padding-left: 34px; }
+.entra-technician-search .directory-search-results { position: absolute; z-index: 5; top: 72px; left: 0; right: 0; max-height: 260px; overflow-y: auto; margin: 0; padding: 4px; border: 1px solid #dfe5ec; border-radius: 8px; background: white; box-shadow: 0 12px 30px #13243a1c; list-style: none; }
+.entra-technician-search .directory-search-results button { display: flex; width: 100%; flex-direction: column; align-items: flex-start; gap: 3px; border: 0; border-radius: 6px; padding: 9px 10px; background: white; color: #24354a; text-align: left; cursor: pointer; }
+.entra-technician-search .directory-search-results button:hover { background: #f1f6fb; }
+.entra-technician-search .directory-search-results span { color: #728198; font-size: 11px; font-weight: 400; }
+.entra-technician-selected { display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #cde9dc; border-radius: 8px; background: #f3fbf7; padding: 10px 12px; }
+.entra-technician-selected b,.entra-technician-selected small { display: block; }
+.entra-technician-selected small { margin-top: 3px; color: #728198; font-size: 11px; }
 .directory-form label.directory-check,.directory-check {
   display: flex;
   flex-direction: row;
