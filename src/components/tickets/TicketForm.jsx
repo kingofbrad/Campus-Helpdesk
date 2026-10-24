@@ -46,7 +46,7 @@ export default function TicketForm({ initialValues = {}, submitLabel, showPriori
 
   return <form className="request-form" onSubmit={submit}>
     {successMessage && <div className="notice success-notice">{successMessage}</div>}
-    {siteError && <div className="signin-error" role="alert">{siteError} Start the API server and try again.</div>}
+    {siteError && <div className="signin-error" role="alert">{siteError} Refresh the page and try again.</div>}
     <div className="form-grid">
       {enableDirectorySearch && account && (
         <StudentDirectorySearch instance={instance} account={account} sites={sites} onSelect={selectStudent} />
@@ -63,4 +63,3 @@ export default function TicketForm({ initialValues = {}, submitLabel, showPriori
     <div className="form-actions">{onCancel && <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>}<Button type="submit" colorPalette="blue" disabled={busy || !!siteError || !sites.length}>{busy ? "Submitting…" : submitLabel}</Button></div>
   </form>;
 }
-
