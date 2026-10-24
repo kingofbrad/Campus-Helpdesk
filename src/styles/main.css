@@ -87,7 +87,7 @@ body {
   cursor: pointer;
 }
 .nav-item.active,.nav-item:hover {
-  background: #203d57;
+  background: #00413e;
   color: white;
 }
 .nav-count {
