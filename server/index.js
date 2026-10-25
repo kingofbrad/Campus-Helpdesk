@@ -314,13 +314,53 @@ async function findTicketForRequester(ticketId, identity) {
   return rows?.[0];
 }
 
+async function markTicketCommentsRead(ticketId, readerType) {
+  const otherAuthor = readerType === "technician" ? "requester" : "technician";
+  const query = new URLSearchParams({
+    ticket_id: `eq.${ticketId}`,
+    author_type: `eq.${otherAuthor}`,
+    read_at: "is.null",
+  });
+  await supabase(`ticket_comments?${query}`, {
+    method: "PATCH",
+    headers: { Prefer: "return=minimal" },
+    body: JSON.stringify({ read_at: new Date().toISOString() }),
+  });
+}
+
 async function getTicketComments(ticketId) {
   const query = new URLSearchParams({
-    select: "id,author_type,author_technician_id,message,created_at,technicians(display_name)",
+    select: "id,author_type,author_technician_id,message,created_at,read_at,technicians(display_name)",
     ticket_id: `eq.${ticketId}`,
     order: "created_at.asc",
   });
   return supabase(`ticket_comments?${query}`);
+}
+
+async function getUnreadCommentCounts(ticketIds, authorType) {
+  if (!ticketIds.length) return {};
+  const query = new URLSearchParams({
+    select: "ticket_id,created_at",
+    ticket_id: `in.(${ticketIds.join(",")})`,
+    author_type: `eq.${authorType}`,
+    read_at: "is.null",
+  });
+  const comments = await supabase(`ticket_comments?${query}`);
+  return (comments || []).reduce((counts, comment) => {
+    const current = counts[comment.ticket_id] || { count: 0, latestAt: null };
+    current.count += 1;
+    if (!current.latestAt || comment.created_at > current.latestAt) current.latestAt = comment.created_at;
+    counts[comment.ticket_id] = current;
+    return counts;
+  }, {});
+}
+
+function withUnreadCommentCounts(tickets, counts) {
+  return tickets.map((ticket) => ({
+    ...ticket,
+    unread_comment_count: counts[ticket.id]?.count || 0,
+    latest_unread_comment_at: counts[ticket.id]?.latestAt || null,
+  }));
 }
 
 async function addTicketComment(ticketId, input, author) {
@@ -366,7 +406,7 @@ export async function handleRequest(req, res) {
       const identity = await verifyAccessToken(req);
       const ticket = await findTicketForRequester(studentCommentsMatch[1], identity);
       if (!ticket) return json(res, 404, { error: "That ticket does not belong to your account." });
-      if (req.method === "GET") return json(res, 200, await getTicketComments(ticket.id));
+      if (req.method === "GET") { await markTicketCommentsRead(ticket.id, "requester"); return json(res, 200, await getTicketComments(ticket.id)); }
       return json(res, 201, await addTicketComment(ticket.id, await readBody(req), { type: "requester" }));
     }
     if (req.method === "GET" && url.pathname === "/api/student/tickets") {
@@ -377,7 +417,9 @@ export async function handleRequest(req, res) {
         requester_object_id: `eq.${identity.objectId}`,
         order: "created_at.desc",
       });
-      return json(res, 200, await supabase(`tickets?${query}`));
+      const tickets = await supabase(`tickets?${query}`);
+      const counts = await getUnreadCommentCounts(tickets.map((ticket) => ticket.id), "technician");
+      return json(res, 200, withUnreadCommentCounts(tickets, counts));
     }
     if (req.method === "POST" && url.pathname === "/api/student/tickets") {
       const identity = await verifyAccessToken(req);
@@ -501,7 +543,7 @@ export async function handleRequest(req, res) {
         ? await findTicketVisibleToTechnician(technicianCommentsMatch[1], technician)
         : await findTicketForTechnician(technicianCommentsMatch[1], technician.id);
       if (!ticket) return json(res, 404, { error: "That ticket is not assigned to your account." });
-      if (req.method === "GET") return json(res, 200, await getTicketComments(ticket.id));
+      if (req.method === "GET") { await markTicketCommentsRead(ticket.id, "technician"); return json(res, 200, await getTicketComments(ticket.id)); }
       return json(res, 201, await addTicketComment(ticket.id, await readBody(req), { type: "technician", technicianId: technician.id }));
     }
 
@@ -541,7 +583,9 @@ export async function handleRequest(req, res) {
         filters.assigned_technician_id = `eq.${technician.id}`;
       }
       const query = new URLSearchParams(filters);
-      return json(res, 200, await supabase(`tickets?${query}`));
+      const tickets = await supabase(`tickets?${query}`);
+      const counts = await getUnreadCommentCounts(tickets.map((ticket) => ticket.id), "requester");
+      return json(res, 200, withUnreadCommentCounts(tickets, counts));
     }
 
     if (req.method === "POST" && url.pathname === "/api/tickets") {
