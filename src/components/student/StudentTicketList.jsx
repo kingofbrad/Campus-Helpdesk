@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react";
+import { Badge, Button } from "@chakra-ui/react";
 import { LuInbox } from "react-icons/lu";
 
 export default function StudentTicketList({ tickets, loading, error, onRefresh, onOpen }) {
@@ -22,10 +22,16 @@ export default function StudentTicketList({ tickets, loading, error, onRefresh, 
 }
 
 function TicketCard({ ticket, onOpen }) {
+  const readKey = `campus-helpdesk-student-read-${ticket.databaseId}`;
+  const isUnread = ticket.unreadCommentCount > 0 && sessionStorage.getItem(readKey) !== ticket.latestUnreadCommentAt;
+  const open = () => {
+    if (ticket.latestUnreadCommentAt) sessionStorage.setItem(readKey, ticket.latestUnreadCommentAt);
+    onOpen();
+  };
   const handleKeyDown = (event) => {
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
-    onOpen();
+    open();
   };
 
   return (
@@ -33,12 +39,16 @@ function TicketCard({ ticket, onOpen }) {
       className="student-ticket"
       role="button"
       tabIndex={0}
-      onClick={onOpen}
+      onClick={open}
       onKeyDown={handleKeyDown}
       aria-label={`Open ticket ${ticket.title}`}
     >
       <div className="student-ticket-main">
-        <div className="student-ticket-title"><b>{ticket.title}</b><small>{ticket.id} · {ticket.category}</small></div>
+        <div className="student-ticket-title">
+          <b>{ticket.title}</b>
+          <small>{ticket.id} · {ticket.category}</small>
+          {isUnread && <Badge mt="2" colorPalette="orange" variant="subtle" rounded="full">{ticket.unreadCommentCount} new {ticket.unreadCommentCount === 1 ? "helpdesk reply" : "helpdesk replies"}</Badge>}
+        </div>
         <span className={`student-status status-${ticket.status.toLowerCase().replaceAll(" ", "-")}`}>{ticket.status}</span>
       </div>
       <p>{ticket.description}</p>
@@ -55,4 +65,5 @@ function TicketCard({ ticket, onOpen }) {
 function EmptyState({ children, icon = false }) {
   return <div className="student-list-empty">{icon && <LuInbox size={22} />}{children}</div>;
 }
+
 
