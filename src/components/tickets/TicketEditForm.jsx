@@ -34,7 +34,8 @@ export default function TicketEditForm({ ticket, onSave, onCancel }) {
       <label className="form-field span-two"><span>Description</span><textarea required maxLength={5000} rows={5} value={values.description} onChange={change("description")} /></label>
     </div>
     {error && <div className="signin-error" role="alert">{error}</div>}
-    <div className="form-actions"><Button type="button" variant="outline" onClick={onCancel} disabled={busy}>Cancel</Button><Button type="submit" colorPalette="blue" disabled={busy}>{busy ? "Saving…" : "Save changes"}</Button></div>
+    <div className="form-actions"><Button type="button" variant="outline" onClick={onCancel} disabled={busy}>Cancel</Button><Button type="submit" colorPalette="ekc" disabled={busy}>{busy ? "Saving…" : "Save changes"}</Button></div>
   </form>;
 }
+
 

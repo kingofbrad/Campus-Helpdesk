@@ -92,7 +92,7 @@ export default function DirectoryManagementPage({ instance, account }) {
             <form className="directory-form site-form" onSubmit={addSite}>
               <label>Site name<input name="name" placeholder="For example, Ashford" required maxLength="100" /></label>
               <label>Site code<input name="code" placeholder="ashford" required maxLength="40" pattern="[a-z0-9]+(-[a-z0-9]+)*" title="Use lowercase letters, numbers, and hyphens." /></label>
-              <Button type="submit" colorPalette="blue" disabled={saving}>{saving ? "Saving…" : "Add site"}</Button>
+              <Button type="submit" colorPalette="ekc" disabled={saving}>{saving ? "Saving…" : "Add site"}</Button>
             </form>
           </section>
           <section className="panel directory-panel">
@@ -118,7 +118,7 @@ export default function DirectoryManagementPage({ instance, account }) {
               <div className="directory-form-span-two"><EntraTechnicianSearch instance={instance} account={account} selectedUser={selectedEntraUser} onSelect={setSelectedEntraUser} /></div>
               <label>Site<select name="site_id" required defaultValue=""><option value="" disabled>Select a site</option>{directory.sites.map((site) => <option key={site.id} value={site.id}>{site.name}</option>)}</select></label>
               <label className="directory-check"><input name="can_view_all_tickets" type="checkbox" /> Can view tickets across all sites</label>
-              <Button type="submit" colorPalette="blue" disabled={saving || !directory.sites.length || !selectedEntraUser}>{saving ? "Saving…" : "Add technician"}</Button>
+              <Button type="submit" colorPalette="ekc" disabled={saving || !directory.sites.length || !selectedEntraUser}>{saving ? "Saving…" : "Add technician"}</Button>
             </form>
             <p className="directory-hint">Tenant ID: <code>{directory.tenantId || "Unavailable"}</code> (filled in automatically)</p>
           </section>
@@ -139,4 +139,5 @@ export default function DirectoryManagementPage({ instance, account }) {
     </>
   );
 }
+
 

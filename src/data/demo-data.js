@@ -176,12 +176,13 @@ export const knowledgeGuides = [
 ];
 
 export const statusColors = {
-  New: "blue",
+  New: "ekc",
   "In progress": "orange",
   "Waiting for student": "purple",
   Resolved: "green",
   Escalated: "purple",
 };
 
-export const priorityColors = { High: "red", Normal: "gray", Low: "teal" };
+export const priorityColors = { High: "red", Normal: "gray", Low: "ekc" };
+
 

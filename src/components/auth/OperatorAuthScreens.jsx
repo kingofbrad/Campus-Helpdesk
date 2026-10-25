@@ -21,7 +21,7 @@ export function OperatorSignInPage({ authError = "" }) {
         <div className="eyebrow">Student technician workspace</div>
         <Heading size="xl" mt="2" mb="2">Sign in to continue</Heading>
         <Text color="gray.600" lineHeight="1.65">Use your Microsoft account to access the student helpdesk demo.</Text>
-        <Button className="signin-button" colorPalette="blue" size="lg" onClick={signIn}><LuLogIn /> Sign in with Microsoft</Button>
+        <Button className="signin-button" colorPalette="ekc" size="lg" onClick={signIn}><LuLogIn /> Sign in with Microsoft</Button>
         {(error || authError) && <div className="signin-error" role="alert">{error || authError}</div>}
         <div className="signin-foot"><LuShieldCheck /><span>Sign-in is handled by Microsoft. Ticket access is limited to your assigned queue.</span></div>
       </section>
@@ -66,4 +66,5 @@ function Brand() {
     </div>
   );
 }
+
 

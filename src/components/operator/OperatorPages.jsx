@@ -48,7 +48,7 @@ export function TicketQueuePage({
             : "Work on requests assigned to your signed-in account, and escalate when needed."
         }
       >
-        <Button colorPalette="#00413e" onClick={onCreateTicket}>
+        <Button colorPalette="ekc" onClick={onCreateTicket}>
           <LuPlus /> Create ticket for student
         </Button>
       </PageHeading>
@@ -103,7 +103,7 @@ export function TicketQueuePage({
                 : `Only requests assigned to ${technicianName} are shown.`}
             </small>
           </div>
-          <Badge colorPalette="blue" variant="subtle" rounded="full">
+          <Badge colorPalette="ekc" variant="subtle" rounded="full">
             {canViewAllTickets
               ? `${queueTickets.length} tickets`
               : `${queueTickets.length} assigned`}
@@ -366,3 +366,4 @@ function GuideCard({ guide, onOpen }) {
     </article>
   );
 }
+

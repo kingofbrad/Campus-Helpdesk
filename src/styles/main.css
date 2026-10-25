@@ -1,5 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
 :root {
+  --ekc-primary: #00b5af;
+  --ekc-secondary: #106f6b;
+  --ekc-lighter: #74c2c1;
+  --ekc-darker: #00413e;
+  --ekc-tint: #e8f6f5;
+  --ekc-border: #cde9e8;
   font-family: "DM Sans", Inter, "Segoe UI", Arial, sans-serif;
   color: #152235;
   background: #f5f7fa;
@@ -16,7 +22,7 @@ body {
 .sidebar {
   width: 246px;
   min-height: 100vh;
-  background: #00b5af;
+  background: var(--ekc-darker);
   color: #d9e4ef;
   padding: 24px 16px;
   display: flex;
@@ -47,7 +53,7 @@ body {
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: #28a4a0;
+  background: var(--ekc-primary);
   display: grid;
   place-items: center;
   color: white;
@@ -99,19 +105,19 @@ body {
 }
 .nav-item.active,
 .nav-item:hover {
-  background: #00413e;
+  background: var(--ekc-secondary);
   color: white;
 }
 .nav-count {
   margin-left: auto;
   border-radius: 10px;
-  background: #2b4a66;
+  background: var(--ekc-secondary);
   padding: 1px 8px;
   font-size: 11px;
 }
 .profile {
   margin-top: auto;
-  border-top: 1px solid #2c4459;
+  border-top: 1px solid var(--ekc-secondary);
   padding: 16px 8px 2px;
   display: flex;
   gap: 10px;
@@ -126,8 +132,8 @@ body {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #d9ecff;
-  color: #2252a5;
+  background: var(--ekc-tint);
+  color: var(--ekc-darker);
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -182,7 +188,7 @@ body {
   margin-bottom: 23px;
 }
 .eyebrow {
-  color: #16817b;
+  color: var(--ekc-secondary);
   text-transform: uppercase;
   font-weight: 700;
   font-size: 10px;
@@ -211,11 +217,11 @@ body {
 .stat-top i {
   width: 32px;
   height: 32px;
-  background: #edf4ff;
+  background: var(--ekc-tint);
   border-radius: 9px;
   display: grid;
   place-items: center;
-  color: #1d63d8;
+  color: var(--ekc-secondary);
   font-style: normal;
   font-size: 17px;
 }
@@ -410,8 +416,8 @@ td b {
   width: 40px;
   height: 40px;
   border-radius: 11px;
-  background: #e7f4f2;
-  color: #16817b;
+  background: var(--ekc-tint);
+  color: var(--ekc-secondary);
   display: grid;
   place-items: center;
 }
@@ -434,7 +440,7 @@ td b {
 .guide-card button {
   border: 0;
   background: none;
-  color: #1d63d8;
+  color: var(--ekc-secondary);
   font-weight: 700;
   font-size: 12px;
   padding: 0;
@@ -758,7 +764,7 @@ td b {
   font-size: 12px;
 }
 .portal-link a {
-  color: #1d63d8;
+  color: var(--ekc-secondary);
   text-decoration: none;
   font-weight: 650;
 }
@@ -843,7 +849,7 @@ td b {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #16817b;
+  color: var(--ekc-secondary);
   font-size: 11px;
 }
 .request-form {
@@ -884,8 +890,8 @@ td b {
 .form-field input:focus,
 .form-field select:focus,
 .form-field textarea:focus {
-  border-color: #5276e8;
-  box-shadow: 0 0 0 3px #5276e81c;
+  border-color: var(--ekc-secondary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ekc-lighter) 25%, transparent);
 }
 .span-two {
   grid-column: 1 / -1;
@@ -1092,8 +1098,8 @@ td b {
   white-space: nowrap;
 }
 .status-new {
-  background: #eaf1ff;
-  color: #3657b7;
+  background: var(--ekc-tint);
+  color: var(--ekc-darker);
 }
 .status-in-progress {
   background: #fff2df;
@@ -1123,7 +1129,7 @@ td b {
   text-align: center;
 }
 .student-list-empty svg {
-  color: #16817b;
+  color: var(--ekc-secondary);
 }
 .student-list-empty b {
   color: #46566a;
@@ -1179,7 +1185,7 @@ td b {
 }
 .notification-trigger:hover {
   background: #f7f9fb;
-  color: #1d63d8;
+  color: var(--ekc-secondary);
 }
 .notification-count {
   position: absolute;
@@ -1229,7 +1235,7 @@ td b {
 .notification-panel > header button {
   border: 0;
   background: none;
-  color: #1d63d8;
+  color: var(--ekc-secondary);
   font-size: 11px;
   font-weight: 650;
   cursor: pointer;
@@ -1265,7 +1271,7 @@ td b {
   background: transparent;
 }
 .notification-item.unread .notification-dot {
-  background: #3c62e9;
+  background: var(--ekc-secondary);
 }
 .notification-copy {
   flex: 1;
@@ -1281,7 +1287,7 @@ td b {
 }
 .notification-copy b {
   font-size: 9px;
-  color: #16817b;
+  color: var(--ekc-secondary);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -1310,7 +1316,7 @@ td b {
   text-align: center;
 }
 .notification-empty svg {
-  color: #16817b;
+  color: var(--ekc-secondary);
 }
 .notification-empty b {
   font-size: 12px;
@@ -1424,8 +1430,8 @@ td b {
   width: 50px;
   height: 50px;
   border-radius: 14px;
-  background: #e7f4f2;
-  color: #16817b;
+  background: var(--ekc-tint);
+  color: var(--ekc-secondary);
   display: grid;
   place-items: center;
   margin: 0 auto 20px;
@@ -1457,7 +1463,7 @@ td b {
 }
 .signin-foot svg {
   flex-shrink: 0;
-  color: #16817b;
+  color: var(--ekc-secondary);
   margin-top: 1px;
 }
 .signin-error {
@@ -1525,7 +1531,7 @@ td b {
   font-size: 12px;
 }
 .conversation-empty svg {
-  color: #16817b;
+  color: var(--ekc-secondary);
 }
 .conversation-empty b {
   color: #46566a;
@@ -1541,8 +1547,8 @@ td b {
 }
 .comment-bubble.mine {
   align-self: flex-end;
-  background: #eaf5f4;
-  border-color: #d5ece9;
+  background: var(--ekc-tint);
+  border-color: var(--ekc-border);
 }
 .comment-meta {
   display: flex;
@@ -1593,8 +1599,8 @@ td b {
   outline: none;
 }
 .comment-form textarea:focus {
-  border-color: #5276e8;
-  box-shadow: 0 0 0 3px #5276e81c;
+  border-color: var(--ekc-secondary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ekc-lighter) 25%, transparent);
 }
 .comment-form-foot {
   display: flex;
@@ -1620,12 +1626,12 @@ td b {
   background: #f8fbff;
 }
 .student-ticket[role="button"]:focus-visible {
-  outline: 3px solid #5276e866;
+  outline: 3px solid color-mix(in srgb, var(--ekc-lighter) 55%, transparent);
   outline-offset: 2px;
 }
 .student-ticket-comments {
   margin-left: auto;
-  color: #1d63d8;
+  color: var(--ekc-secondary);
   font-weight: 700;
 }
 .directory-tabs {
@@ -1647,8 +1653,8 @@ td b {
   cursor: pointer;
 }
 .directory-tabs button.active {
-  background: #e7f4f2;
-  color: #127b75;
+  background: var(--ekc-tint);
+  color: var(--ekc-secondary);
   font-weight: 700;
 }
 .directory-tabs button span {
@@ -1692,8 +1698,8 @@ td b {
 .directory-form input:focus,
 .directory-form select:focus,
 .directory-inline:focus {
-  border-color: #5276e8;
-  box-shadow: 0 0 0 3px #5276e81c;
+  border-color: var(--ekc-secondary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ekc-lighter) 25%, transparent);
 }
 .site-form {
   grid-template-columns: minmax(180px, 1fr) minmax(150px, 0.7fr) auto;
@@ -1907,15 +1913,15 @@ td b {
     color 0.15s ease;
 }
 .student-portal-nav a:hover {
-  background: #edf4f7;
-  color: #1c5261;
+  background: var(--ekc-tint);
+  color: var(--ekc-darker);
 }
 .student-portal-nav a.active {
-  background: #e7f4f2;
-  color: #127b75;
+  background: var(--ekc-tint);
+  color: var(--ekc-secondary);
 }
 .receipt a {
-  color: #1d63d8;
+  color: var(--ekc-secondary);
   font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
@@ -1933,3 +1939,4 @@ td b {
     font-size: 11px;
   }
 }
+

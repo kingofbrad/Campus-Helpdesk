@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
+import { ChakraProvider } from "@chakra-ui/react";
+import { chakraSystem } from "./config/chakra-system.js";
 import { InteractionStatus, PublicClientApplication } from "@azure/msal-browser";
 import { MsalProvider, useMsal } from "@azure/msal-react";
 import { msalConfig } from "./config/auth-config.js";
@@ -34,7 +35,7 @@ async function startApplication() {
   createRoot(document.getElementById("root")).render(
     <React.StrictMode>
       <MsalProvider instance={msalInstance}>
-        <ChakraProvider value={defaultSystem}>
+        <ChakraProvider value={chakraSystem}>
           <RootApp />
         </ChakraProvider>
       </MsalProvider>
@@ -46,3 +47,4 @@ startApplication().catch((error) => {
   console.error("Could not initialize Microsoft sign-in.", error);
   document.getElementById("root").textContent = "Microsoft sign-in could not be initialized. Please refresh the page or contact the demo owner.";
 });
+

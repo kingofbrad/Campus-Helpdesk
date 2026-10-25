@@ -173,7 +173,7 @@ function SignInCard({ error, disabled, onSignIn }) {
       <Heading size="lg" mb="2">Sign in to access your requests</Heading>
       <Text color="gray.600">Use your Microsoft account to view your tickets and submit a new request.</Text>
       {error && <div className="signin-error" role="alert">{error}</div>}
-      <Button className="signin-button" colorPalette="blue" size="lg" onClick={onSignIn} disabled={disabled}>
+      <Button className="signin-button" colorPalette="ekc" size="lg" onClick={onSignIn} disabled={disabled}>
         <LuLogIn /> Sign in with Microsoft
       </Button>
       <div className="portal-link"><a href="/operator">Student technician sign in</a></div>
@@ -189,4 +189,5 @@ function StudentPortalNavigation({ isRequestsPage }) {
     </nav>
   );
 }
+
 

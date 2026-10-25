@@ -63,7 +63,7 @@ export default function TicketConversation({ ticket, audience, readOnly = false,
           <textarea id="ticket-comment" maxLength={5000} rows={3} value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Write a comment…" required />
           <div className="comment-form-foot">
             <small>Comments are shared with the student and assigned technician.</small>
-            <Button type="submit" colorPalette="blue" disabled={sending || !message.trim()}>
+            <Button type="submit" colorPalette="ekc" disabled={sending || !message.trim()}>
               <LuSend /> {sending ? "Sending…" : audience === "student" ? "Send reply" : "Send comment"}
             </Button>
           </div>
@@ -72,4 +72,5 @@ export default function TicketConversation({ ticket, audience, readOnly = false,
     </section>
   </div>;
 }
+
 

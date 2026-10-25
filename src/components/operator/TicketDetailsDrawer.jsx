@@ -49,7 +49,7 @@ export default function TicketDetailsDrawer({ ticket, technicianName, displayAss
               <Button size="sm" variant="outline" onClick={() => onAction("progress")}>Mark in progress</Button>
               <Button size="sm" variant="outline" onClick={() => onAction("waiting")}>Waiting for student</Button>
               <Button size="sm" variant="outline" onClick={() => onAction("resolve")}>Resolve</Button>
-              <Button size="sm" colorPalette="teal" onClick={onEscalate}><LuArrowUpRight /> Escalate to IT</Button>
+              <Button size="sm" colorPalette="ekc" onClick={onEscalate}><LuArrowUpRight /> Escalate to IT</Button>
             </>}
             {!canManage && <small className="detail-readonly-note">You can view this ticket, but only its assigned technician can update it.</small>}
           </div>
