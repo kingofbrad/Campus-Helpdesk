@@ -208,7 +208,23 @@ async function getDirectoryTechnicians() {
   return supabase(`technicians?${new URLSearchParams({ select: "id,entra_tenant_id,entra_object_id,display_name,site_id,is_active,can_view_all_tickets,sites(name)", order: "display_name.asc" })}`);
 }
 
-const ticketSelect = "id,ticket_number,ticket_reference,requester_name,requester_email,site_id,title,description,category,priority,status,assigned_technician_id,created_at,updated_at,sites(name),technicians(display_name),ticket_activity(note,created_at)";
+const ticketSelect = "id,ticket_number,ticket_reference,requester_name,requester_email,site_id,title,description,category,priority,status,assigned_technician_id,created_at,updated_at,sites(name),technicians(display_name)";
+
+async function addTicketHistory(ticketId, entries) {
+  const rows = (Array.isArray(entries) ? entries : [entries]).filter(Boolean).map((entry) => ({
+    ticket_id: ticketId,
+    actor_type: entry.actorType || "system",
+    ...(entry.actorTechnicianId ? { actor_technician_id: entry.actorTechnicianId } : {}),
+    event_type: entry.eventType,
+    summary: entry.summary,
+    ...(entry.fieldName ? { field_name: entry.fieldName } : {}),
+    ...(entry.oldValue !== undefined ? { old_value: entry.oldValue } : {}),
+    ...(entry.newValue !== undefined ? { new_value: entry.newValue } : {}),
+  }));
+  if (rows.length) await supabase("ticket_history", {
+    method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify(rows),
+  });
+}
 
 async function createTicket(input, actor) {
   const name = String(input.requester_name || "").trim();
@@ -264,16 +280,18 @@ async function createTicket(input, actor) {
     }),
   });
   const ticketId = inserted[0].id;
-  await supabase("ticket_activity", {
-    method: "POST", headers: { Prefer: "return=minimal" },
-    body: JSON.stringify({
-      ticket_id: ticketId,
-      actor_type: actor.type,
-      ...(actor.type === "technician" ? { actor_technician_id: actor.technicianId } : {}),
-      activity_type: "created",
-      note: actor.type === "technician" ? `Logged by ${actor.displayName} on behalf of the student.` : "Submitted through the student self-service portal.",
-    }),
-  });
+  await addTicketHistory(ticketId, [
+    {
+      actorType: actor.type,
+      actorTechnicianId: actor.type === "technician" ? actor.technicianId : undefined,
+      eventType: "created",
+      summary: actor.type === "technician" ? "Ticket logged by " + actor.displayName + " on behalf of the student." : "Ticket submitted through the student self-service portal.",
+    },
+    {
+      eventType: "assigned", fieldName: "Assigned technician", newValue: technician.display_name,
+      summary: "Assigned to " + technician.display_name + " at " + site.name + ".",
+    },
+  ]);
   const query = new URLSearchParams({ select: ticketSelect, id: `eq.${ticketId}`, limit: "1" });
   return (await supabase(`tickets?${query}`))[0];
 }
@@ -304,7 +322,7 @@ async function findTicketVisibleToTechnician(ticketId, technician) {
 
 async function findTicketForRequester(ticketId, identity) {
   const query = new URLSearchParams({
-    select: "id",
+    select: "id,status",
     id: `eq.${ticketId}`,
     requester_tenant_id: `eq.${identity.tenantId}`,
     requester_object_id: `eq.${identity.objectId}`,
@@ -363,7 +381,7 @@ function withUnreadCommentCounts(tickets, counts) {
   }));
 }
 
-async function addTicketComment(ticketId, input, author) {
+async function addTicketComment(ticketId, input, author, previousStatus = null) {
   const message = String(input.message || "").trim();
   if (!message || message.length > 5000) {
     const error = new Error("Write a comment of up to 5,000 characters before sending.");
@@ -384,6 +402,13 @@ async function addTicketComment(ticketId, input, author) {
     await supabase(`tickets?id=eq.${ticketId}`, {
       method: "PATCH",
       body: JSON.stringify({ status: "student_updated" }),
+    });
+    const statusChanged = previousStatus !== "student_updated";
+    await addTicketHistory(ticketId, {
+      actorType: "requester",
+      eventType: statusChanged ? "status_changed" : "note",
+      summary: statusChanged ? "Student replied; status changed to Updated by student." : "Student replied to the ticket.",
+      ...(statusChanged ? { fieldName: "Status", oldValue: previousStatus || "Unknown", newValue: "Updated by student" } : {}),
     });
   }
   return getTicketComments(ticketId);
@@ -407,7 +432,7 @@ export async function handleRequest(req, res) {
       const ticket = await findTicketForRequester(studentCommentsMatch[1], identity);
       if (!ticket) return json(res, 404, { error: "That ticket does not belong to your account." });
       if (req.method === "GET") { await markTicketCommentsRead(ticket.id, "requester"); return json(res, 200, await getTicketComments(ticket.id)); }
-      return json(res, 201, await addTicketComment(ticket.id, await readBody(req), { type: "requester" }));
+      return json(res, 201, await addTicketComment(ticket.id, await readBody(req), { type: "requester" }, ticket.status));
     }
     if (req.method === "GET" && url.pathname === "/api/student/tickets") {
       const identity = await verifyAccessToken(req);
@@ -537,6 +562,44 @@ export async function handleRequest(req, res) {
       return json(res, 404, { error: "Not found." });
     }
 
+    const technicianHistoryMatch = url.pathname.match(/^\/api\/tickets\/([0-9a-f-]+)\/history$/i);
+    if (req.method === "GET" && technicianHistoryMatch) {
+      const ticket = await findTicketVisibleToTechnician(technicianHistoryMatch[1], technician);
+      if (!ticket) return json(res, 404, { error: "That ticket is not visible to your account." });
+      const query = new URLSearchParams({
+        select: "id,actor_type,actor_technician_id,event_type,summary,field_name,old_value,new_value,created_at,technicians(display_name)",
+        ticket_id: `eq.${ticket.id}`, order: "created_at.asc",
+      });
+      return json(res, 200, await supabase(`ticket_history?${query}`));
+    }
+
+    const technicianNotesMatch = url.pathname.match(/^\/api\/tickets\/([0-9a-f-]+)\/internal-notes$/i);
+    if (technicianNotesMatch && ["GET", "POST"].includes(req.method)) {
+      const ticket = req.method === "GET"
+        ? await findTicketVisibleToTechnician(technicianNotesMatch[1], technician)
+        : await findTicketForTechnician(technicianNotesMatch[1], technician.id);
+      if (!ticket) return json(res, 404, { error: "That ticket is not visible to your account." });
+      if (req.method === "GET") {
+        const query = new URLSearchParams({
+          select: "id,note,created_at,technicians(display_name)",
+          ticket_id: `eq.${ticket.id}`, order: "created_at.asc",
+        });
+        return json(res, 200, await supabase(`ticket_internal_notes?${query}`));
+      }
+      const input = await readBody(req);
+      const note = requiredText(input.note, "Internal note", 5000);
+      const query = new URLSearchParams({ select: "id,note,created_at,technicians(display_name)" });
+      const rows = await supabase(`ticket_internal_notes?${query}`, {
+        method: "POST", headers: { Prefer: "return=representation" },
+        body: JSON.stringify({ ticket_id: ticket.id, author_technician_id: technician.id, note }),
+      });
+      await addTicketHistory(ticket.id, {
+        actorType: "technician", actorTechnicianId: technician.id, eventType: "note",
+        summary: "Internal note added by " + technician.display_name + ".",
+      });
+      return json(res, 201, rows[0]);
+    }
+
     const technicianCommentsMatch = url.pathname.match(/^\/api\/tickets\/([0-9a-f-]+)\/comments$/i);
     if (technicianCommentsMatch && ["GET", "POST"].includes(req.method)) {
       const ticket = req.method === "GET"
@@ -544,7 +607,7 @@ export async function handleRequest(req, res) {
         : await findTicketForTechnician(technicianCommentsMatch[1], technician.id);
       if (!ticket) return json(res, 404, { error: "That ticket is not assigned to your account." });
       if (req.method === "GET") { await markTicketCommentsRead(ticket.id, "technician"); return json(res, 200, await getTicketComments(ticket.id)); }
-      return json(res, 201, await addTicketComment(ticket.id, await readBody(req), { type: "technician", technicianId: technician.id }));
+      return json(res, 201, await addTicketComment(ticket.id, await readBody(req), { type: "technician", technicianId: technician.id }, ticket.status));
     }
 
     if (req.method === "GET" && url.pathname === "/api/ticket-replies") {
@@ -607,19 +670,28 @@ export async function handleRequest(req, res) {
         return json(res, 400, { error: "Complete each required field before saving your changes." });
       }
       if (!/^\S+@\S+\.\S+$/.test(email)) return json(res, 400, { error: "Enter a valid student contact email address." });
+      const fieldLabels = {
+        requester_name: "Student name", requester_email: "Student email", title: "Title",
+        description: "Description", category: "Category", priority: "Priority",
+      };
+      const requestedValues = {
+        requester_name: name.slice(0, 160), requester_email: email.slice(0, 254),
+        title: title.slice(0, 200), description: description.slice(0, 5000),
+        category: category.slice(0, 100), priority,
+      };
+      const historyEntries = Object.entries(requestedValues)
+        .filter(([field, value]) => String(ticket[field] ?? "") !== String(value))
+        .map(([field, value]) => ({
+          actorType: "technician", actorTechnicianId: technician.id, eventType: "field_changed",
+          summary: fieldLabels[field] + " updated by " + technician.display_name + ".",
+          fieldName: fieldLabels[field], oldValue: String(ticket[field] ?? ""), newValue: String(value),
+        }));
       const filter = new URLSearchParams({ id: `eq.${ticket.id}`, assigned_technician_id: `eq.${technician.id}` });
       await supabase(`tickets?${filter}`, {
         method: "PATCH",
-        body: JSON.stringify({
-          requester_name: name.slice(0, 160), requester_email: email.slice(0, 254),
-          title: title.slice(0, 200), description: description.slice(0, 5000),
-          category: category.slice(0, 100), priority,
-        }),
+        body: JSON.stringify(requestedValues),
       });
-      await supabase("ticket_activity", {
-        method: "POST", headers: { Prefer: "return=minimal" },
-        body: JSON.stringify({ ticket_id: ticket.id, actor_type: "technician", actor_technician_id: technician.id, activity_type: "note", note: `Ticket details updated by ${technician.display_name}.` }),
-      });
+      await addTicketHistory(ticket.id, historyEntries);
       const query = new URLSearchParams({ select: ticketSelect, id: `eq.${ticket.id}`, limit: "1" });
       return json(res, 200, (await supabase(`tickets?${query}`))[0]);
     }
@@ -637,11 +709,15 @@ export async function handleRequest(req, res) {
       };
       if (!actionMap[action]) return json(res, 400, { error: "That ticket action is not supported." });
       const [status, note] = actionMap[action];
+      if (ticket.status === status) return json(res, 200, { ok: true });
       const updateQuery = new URLSearchParams({ id: `eq.${ticket.id}`, assigned_technician_id: `eq.${technician.id}` });
       await supabase(`tickets?${updateQuery}`, { method: "PATCH", body: JSON.stringify({ status }) });
-      await supabase("ticket_activity", {
-        method: "POST", headers: { Prefer: "return=minimal" },
-        body: JSON.stringify({ ticket_id: ticket.id, actor_type: "technician", actor_technician_id: technician.id, activity_type: action === "escalate" ? "escalated" : action === "progress" ? "status_changed" : "status_changed", note }),
+      const statusLabels = { new: "New", in_progress: "In progress", waiting_for_student: "Waiting for student", student_updated: "Updated by student", resolved: "Resolved", escalated: "Escalated" };
+      await addTicketHistory(ticket.id, {
+        actorType: "technician", actorTechnicianId: technician.id,
+        eventType: action === "escalate" ? "escalated" : "status_changed",
+        summary: note, fieldName: "Status", oldValue: statusLabels[ticket.status] || ticket.status,
+        newValue: statusLabels[status] || status,
       });
       return json(res, 200, { ok: true });
     }
@@ -658,6 +734,12 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
 }
 
 export default handleRequest;
+
+
+
+
+
+
 
 
 
