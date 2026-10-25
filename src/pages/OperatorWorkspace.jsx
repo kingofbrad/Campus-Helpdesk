@@ -50,7 +50,7 @@ export default function OperatorWorkspace() {
   const selected = workspace.selected;
 
   return (
-    <Flex minH="100vh" bg="#f5f7fa" color="#152235">
+    <Flex className={workspace.selected ? "operator-shell ticket-open" : "operator-shell"} minH="100vh" bg="#f5f7fa" color="#152235">
       <OperatorSidebar
         page={workspace.page}
         openCount={workspace.openCount}
@@ -59,7 +59,7 @@ export default function OperatorWorkspace() {
         canManageDirectory={workspace.canManageDirectory}
         onNavigate={workspace.changePage}
       />
-      <Box flex="1" minW="0">
+      <Box className="operator-main" flex="1" minW="0">
         <OperatorHeader
           title={pageTitles[workspace.page]}
           databaseMode={workspace.databaseMode}
@@ -89,7 +89,7 @@ export default function OperatorWorkspace() {
             ))}
           </div>
         )}
-        <main className={`content ${!workspace.selected && ["queue", "mine"].includes(workspace.page) ? "queue-content" : ""}`}>
+        <main className={`content ${workspace.selected ? "ticket-content" : ["queue", "mine"].includes(workspace.page) ? "queue-content" : ""}`}>
           {workspace.selected ? (
             <TicketDetailsDrawer
               ticket={workspace.selected}
@@ -176,6 +176,8 @@ export default function OperatorWorkspace() {
     </Flex>
   );
 }
+
+
 
 
 

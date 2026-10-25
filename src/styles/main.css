@@ -2123,4 +2123,86 @@ td b {
 
 
 
+.operator-shell.ticket-open {
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
+.operator-shell.ticket-open .sidebar {
+  height: 100vh;
+  min-height: 0;
+  overflow-y: auto;
+}
+.operator-main {
+  min-width: 0;
+}
+.operator-shell.ticket-open .operator-main {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
+.operator-shell.ticket-open .topbar,
+.operator-shell.ticket-open .ticket-workspace-tabs {
+  flex: 0 0 auto;
+}
+.operator-shell.ticket-open .ticket-workspace-tabs {
+  max-height: 48px;
+}
+.operator-shell.ticket-open .ticket-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  padding: 16px 22px;
+}
+.operator-shell.ticket-open .ticket-full-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.operator-shell.ticket-open .ticket-full-page-body {
+  flex: 1;
+  min-height: 0;
+}
+.operator-shell.ticket-open .ticket-full-page-main {
+  min-height: 0;
+  overflow-y: auto;
+}
+.operator-shell.ticket-open .conversation-inline {
+  height: auto;
+  min-height: 0;
+  overflow: hidden;
+}
+.operator-shell.ticket-open .conversation-inline .conversation-list {
+  min-height: 0;
+  overflow-y: auto;
+}
+.operator-shell.ticket-open .ticket-full-page-actions {
+  flex: 0 0 auto;
+}
+@media (max-width: 700px) {
+  .operator-shell.ticket-open .ticket-content {
+    padding: 12px;
+  }
+  .operator-shell.ticket-open .ticket-full-page-body {
+    overflow-y: auto;
+  }
+  .operator-shell.ticket-open .ticket-full-page-main {
+    overflow: visible;
+  }
+  .operator-shell.ticket-open .conversation-inline {
+    min-height: 450px;
+  }
+}
+
+
+
+
 
