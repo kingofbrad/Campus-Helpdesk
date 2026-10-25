@@ -179,10 +179,12 @@ export const statusColors = {
   New: "ekc",
   "In progress": "orange",
   "Waiting for student": "purple",
+  "Updated by student": "orange",
   Resolved: "green",
   Escalated: "purple",
 };
 
 export const priorityColors = { High: "red", Normal: "gray", Low: "ekc" };
+
 
 

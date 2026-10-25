@@ -41,6 +41,7 @@ function mapTicket(row) {
     new: "New",
     in_progress: "In progress",
     waiting_for_student: "Waiting for student",
+    student_updated: "Updated by student",
     resolved: "Resolved",
     escalated: "Escalated",
   };
@@ -208,6 +209,7 @@ export async function updateTicket(instance, account, ticket, action) {
     body: JSON.stringify({ action }),
   });
 }
+
 
 
 

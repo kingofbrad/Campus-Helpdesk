@@ -340,6 +340,12 @@ async function addTicketComment(ticketId, input, author) {
       message,
     }),
   });
+  if (author.type === "requester") {
+    await supabase(`tickets?id=eq.${ticketId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: "student_updated" }),
+    });
+  }
   return getTicketComments(ticketId);
 }
 
@@ -608,6 +614,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
 }
 
 export default handleRequest;
+
+
 
 
 

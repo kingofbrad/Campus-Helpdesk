@@ -1109,7 +1109,10 @@ td b {
   background: #f1ebff;
   color: #6944a2;
 }
-.status-resolved {
+.status-updated-by-student {
+  background: #fff4e3;
+  color: #9c5e0a;
+}.status-resolved {
   background: #e7f6ed;
   color: #27744b;
 }
@@ -2077,4 +2080,5 @@ td b {
     padding: 16px 18px;
   }
 }
+
 

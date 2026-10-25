@@ -74,7 +74,7 @@ export function TicketQueuePage({
           label="Needs attention"
           value={
             queueTickets.filter(
-              (ticket) => ticket.status === "Waiting for student",
+              (ticket) => ["Waiting for student", "Updated by student"].includes(ticket.status),
             ).length
           }
           note="Waiting for a reply or next step"
@@ -129,6 +129,7 @@ export function TicketQueuePage({
               "New",
               "In progress",
               "Waiting for student",
+              "Updated by student",
               "Resolved",
               "Escalated",
             ].map((value) => (
@@ -314,5 +315,7 @@ function GuideCard({ guide, onOpen, onEdit }) {
     </article>
   );
 }
+
+
 
 
