@@ -47,6 +47,7 @@ export default function TicketDetailsDrawer({ ticket, technicianName, displayAss
             {canManage && <>
               <Button size="sm" variant="outline" onClick={onEdit}>Edit ticket</Button>
               <Button size="sm" variant="outline" onClick={() => onAction("progress")}>Mark in progress</Button>
+              <Button size="sm" variant="outline" onClick={() => onAction("waiting")}>Waiting for student</Button>
               <Button size="sm" variant="outline" onClick={() => onAction("resolve")}>Resolve</Button>
               <Button size="sm" colorPalette="teal" onClick={onEscalate}><LuArrowUpRight /> Escalate to IT</Button>
             </>}
@@ -57,4 +58,5 @@ export default function TicketDetailsDrawer({ ticket, technicianName, displayAss
     </>
   );
 }
+
 
