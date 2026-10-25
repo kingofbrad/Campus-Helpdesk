@@ -33,7 +33,6 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
   const [selected, setSelected] = useState(null);
   const [ticketTabs, setTicketTabs] = useState([]);
   const [activeTicketTabId, setActiveTicketTabId] = useState(null);
-  const [conversationTicket, setConversationTicket] = useState(null);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("All statuses");
   const [priority, setPriority] = useState("All priorities");
@@ -362,7 +361,6 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
   const closeTicketTab = (id) => {
     const remaining = ticketTabs.filter((tab) => tab.id !== id);
     setTicketTabs(remaining);
-    if (conversationTicket && ticketTabKey(conversationTicket) === id) setConversationTicket(null);
     if (editing && activeTicketTabId === id) setEditing(false);
     if (activeTicketTabId === id) {
       const next = remaining[remaining.length - 1];
@@ -391,7 +389,6 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     if (ticket) {
       setPage("queue");
       setSelected(ticket);
-      if (item.kind === "reply") setConversationTicket(ticket);
     }
     setNotificationsOpen(false);
   };
@@ -411,8 +408,6 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     closeTicketTab,
     dismissTicketDetails,
     setSelected,
-    conversationTicket,
-    setConversationTicket,
     query,
     setQuery,
     status,
@@ -461,6 +456,8 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     setCreateOpen,
   };
 }
+
+
 
 
 

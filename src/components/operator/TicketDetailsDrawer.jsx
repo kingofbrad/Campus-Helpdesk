@@ -1,8 +1,9 @@
 import { Badge, Button, Heading, Text } from "@chakra-ui/react";
-import { LuArrowUpRight, LuMessageSquare } from "react-icons/lu";
+import { LuArrowUpRight } from "react-icons/lu";
+import TicketConversation from "../tickets/TicketConversation.jsx";
 import { priorityColors, statusColors } from "../../data/demo-data.js";
 
-export default function TicketDetailsDrawer({ ticket, technicianName, displayAssignee, databaseMode, canManage, onComments, onEdit, onAction, onEscalate }) {
+export default function TicketDetailsDrawer({ ticket, technicianName, displayAssignee, databaseMode, canManage, onEdit, onAction, onEscalate }) {
   if (!ticket) return null;
 
   return (
@@ -40,8 +41,8 @@ export default function TicketDetailsDrawer({ ticket, technicianName, displayAss
           </div>
         </aside>
       </div>
+      {databaseMode && <TicketConversation ticket={ticket} audience="technician" readOnly={!canManage} inline />}
       <div className="ticket-actions ticket-full-page-actions">
-        {databaseMode && <Button size="sm" variant="outline" onClick={onComments}><LuMessageSquare /> Comments</Button>}
         {canManage && <>
           <Button size="sm" variant="outline" onClick={onEdit}>Edit ticket</Button>
           <Button size="sm" variant="outline" onClick={() => onAction("progress")}>Mark in progress</Button>
@@ -54,4 +55,7 @@ export default function TicketDetailsDrawer({ ticket, technicianName, displayAss
     </section>
   );
 }
+
+
+
 

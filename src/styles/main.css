@@ -2081,4 +2081,31 @@ td b {
   }
 }
 
+.conversation-inline {
+  padding: 22px 26px 24px;
+  border-top: 1px solid #e5eaf0;
+  background: #fff;
+}
+.conversation-inline-head {
+  margin-bottom: 12px;
+}
+.conversation-inline .conversation-list {
+  max-height: 420px;
+  min-height: 150px;
+  border-bottom: 1px solid #e8edf2;
+}
+.conversation-inline .conversation-summary {
+  margin-bottom: 10px;
+}
+.conversation-inline .comment-bubble {
+  width: min(88%, 780px);
+}
+@media (max-width: 700px) {
+  .conversation-inline {
+    padding: 20px 18px;
+  }
+  .conversation-inline .comment-bubble {
+    width: 96%;
+  }
+}
 

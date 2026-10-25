@@ -2,7 +2,6 @@ import { Box, Flex } from "@chakra-ui/react";
 import { InteractionStatus } from "@azure/msal-browser";
 import useOperatorWorkspace from "../hooks/useOperatorWorkspace.js";
 import useTechnicianIdentity from "../hooks/useTechnicianIdentity.js";
-import TicketConversation from "../components/tickets/TicketConversation.jsx";
 import OperatorHeader from "../components/operator/OperatorHeader.jsx";
 import OperatorSidebar from "../components/operator/OperatorSidebar.jsx";
 import TicketDetailsDrawer from "../components/operator/TicketDetailsDrawer.jsx";
@@ -98,7 +97,6 @@ export default function OperatorWorkspace() {
               displayAssignee={workspace.displayAssignee}
               databaseMode={workspace.databaseMode}
               canManage={workspace.isAssignedToMe(workspace.selected)}
-              onComments={() => workspace.setConversationTicket(workspace.selected)}
               onEdit={() => workspace.setEditing(true)}
               onAction={workspace.updateStatus}
               onEscalate={() => workspace.setSelected({ ...workspace.selected, showEscalation: true })}
@@ -157,14 +155,6 @@ export default function OperatorWorkspace() {
         </main>
       </Box>
 
-      {workspace.conversationTicket && (
-        <TicketConversation
-          ticket={workspace.conversationTicket}
-          audience="technician"
-          readOnly={!workspace.isAssignedToMe(workspace.conversationTicket)}
-          onClose={() => workspace.setConversationTicket(null)}
-        />
-      )}
       <GuideDialog guide={workspace.activeGuide} onClose={() => workspace.setActiveGuide(null)} />
       <ContentEditorDialog
         editor={workspace.contentEditor}
@@ -186,6 +176,8 @@ export default function OperatorWorkspace() {
     </Flex>
   );
 }
+
+
 
 
 
