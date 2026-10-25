@@ -1,9 +1,13 @@
+import { useEffect, useState } from "react";
 import { Badge, Button, Heading, Text } from "@chakra-ui/react";
-import { LuArrowUpRight } from "react-icons/lu";
+import { LuArrowUpRight, LuLockKeyhole } from "react-icons/lu";
 import TicketConversation from "../tickets/TicketConversation.jsx";
+import { InternalNotesPanel, TicketHistory } from "../tickets/TechnicianTicketPanels.jsx";
 import { priorityColors, statusColors } from "../../data/demo-data.js";
 
 export default function TicketDetailsDrawer({ ticket, technicianName, displayAssignee, databaseMode, canManage, onEdit, onAction, onEscalate }) {
+  const [notesOpen, setNotesOpen] = useState(false);
+  useEffect(() => setNotesOpen(false), [ticket?.databaseId]);
   if (!ticket) return null;
 
   return (
@@ -15,7 +19,7 @@ export default function TicketDetailsDrawer({ ticket, technicianName, displayAss
           <Badge colorPalette={priorityColors[ticket.priority]} variant="subtle" rounded="full">{ticket.priority} priority</Badge>
         </div>
       </header>
-      <div className={databaseMode ? "ticket-full-page-body" : "ticket-full-page-body single-column"}>
+      <div className={`ticket-full-page-body ${databaseMode ? "" : "single-column"} ${notesOpen ? "ticket-with-notes" : ""}`}>
         <div className="ticket-full-page-main">
           <Heading size="xl" mb="2">{ticket.title}</Heading>
           <Text fontSize="sm" color="gray.600">Submitted by {ticket.student} · {ticket.updated}</Text>
@@ -28,19 +32,20 @@ export default function TicketDetailsDrawer({ ticket, technicianName, displayAss
           </div>
           <div className="detail-label">Issue description</div>
           <div className="description">{ticket.description}</div>
-          <div className="detail-label">Activity &amp; notes</div>
-          <div className="timeline">
-            {ticket.notes.map((note, index) => (
-              <div key={`${ticket.databaseId || ticket.id}-${index}`}>
-                <small>{index === 0 ? "Ticket activity" : `${technicianName} · student technician`}</small>
-                {note}
+          {databaseMode ? <TicketHistory ticket={ticket} technicianName={technicianName} /> : (
+            <>
+              <div className="detail-label">Ticket activity</div>
+              <div className="timeline">
+                {ticket.notes.map((note, index) => <div key={`${ticket.databaseId || ticket.id}-${index}`}><small>{index === 0 ? "Ticket activity" : `${technicianName} · student technician`}</small>{note}</div>)}
               </div>
-            ))}
-          </div>
+            </>
+          )}
         </div>
         {databaseMode && <TicketConversation ticket={ticket} audience="technician" readOnly={!canManage} inline />}
+        {databaseMode && notesOpen && <InternalNotesPanel ticket={ticket} technicianName={technicianName} canManage={canManage} />}
       </div>
       <div className="ticket-actions ticket-full-page-actions">
+        {databaseMode && <Button size="sm" variant={notesOpen ? "subtle" : "outline"} onClick={() => setNotesOpen((open) => !open)}><LuLockKeyhole /> {notesOpen ? "Hide internal notes" : "Internal notes"}</Button>}
         {canManage && <>
           <Button size="sm" variant="outline" onClick={onEdit}>Edit ticket</Button>
           <Button size="sm" variant="outline" onClick={() => onAction("progress")}>Mark in progress</Button>
