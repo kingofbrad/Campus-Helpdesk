@@ -260,6 +260,7 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
   const changePage = (nextPage) => {
     setPage(nextPage);
     setSelected(null);
+    setActiveTicketTabId(null);
   };
 
   const updateStatus = (action) => {
@@ -460,6 +461,8 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     setCreateOpen,
   };
 }
+
+
 
 
 

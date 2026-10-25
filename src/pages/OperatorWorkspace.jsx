@@ -90,7 +90,20 @@ export default function OperatorWorkspace() {
             ))}
           </div>
         )}
-        <main className={`content ${["queue", "mine"].includes(workspace.page) ? "queue-content" : ""}`}>
+        <main className={`content ${!workspace.selected && ["queue", "mine"].includes(workspace.page) ? "queue-content" : ""}`}>
+          {workspace.selected ? (
+            <TicketDetailsDrawer
+              ticket={workspace.selected}
+              technicianName={identity.technicianName}
+              displayAssignee={workspace.displayAssignee}
+              databaseMode={workspace.databaseMode}
+              canManage={workspace.isAssignedToMe(workspace.selected)}
+              onComments={() => workspace.setConversationTicket(workspace.selected)}
+              onEdit={() => workspace.setEditing(true)}
+              onAction={workspace.updateStatus}
+              onEscalate={() => workspace.setSelected({ ...workspace.selected, showEscalation: true })}
+            />
+          ) : <>
           {workspace.page === "queue" && (
             <TicketQueuePage
               databaseMode={workspace.databaseMode}
@@ -140,21 +153,10 @@ export default function OperatorWorkspace() {
           {workspace.page === "directory" && workspace.canManageDirectory && (
             <DirectoryManagementPage instance={identity.instance} account={activeAccount} />
           )}
+          </>}
         </main>
       </Box>
 
-      <TicketDetailsDrawer
-        ticket={selected}
-        technicianName={identity.technicianName}
-        displayAssignee={workspace.displayAssignee}
-        databaseMode={workspace.databaseMode}
-        canManage={workspace.isAssignedToMe(selected)}
-        onClose={workspace.dismissTicketDetails}
-        onComments={() => workspace.setConversationTicket(selected)}
-        onEdit={() => workspace.setEditing(true)}
-        onAction={workspace.updateStatus}
-        onEscalate={() => workspace.setSelected({ ...selected, showEscalation: true })}
-      />
       {workspace.conversationTicket && (
         <TicketConversation
           ticket={workspace.conversationTicket}
@@ -184,6 +186,11 @@ export default function OperatorWorkspace() {
     </Flex>
   );
 }
+
+
+
+
+
 
 
 
