@@ -3,9 +3,9 @@ import { Button, Heading, Text } from "@chakra-ui/react";
 import { InteractionStatus } from "@azure/msal-browser";
 import { useMsal } from "@azure/msal-react";
 import { LuLogIn, LuLogOut, LuShieldCheck } from "react-icons/lu";
-import TicketConversation from "../components/tickets/TicketConversation.jsx";
 import StudentRequestPanel from "../components/student/StudentRequestPanel.jsx";
 import StudentTicketList from "../components/student/StudentTicketList.jsx";
+import StudentTicketDetailsPage from "../components/student/StudentTicketDetailsPage.jsx";
 import {
   databaseMode,
   getStudentTickets,
@@ -22,7 +22,7 @@ export default function StudentPortal() {
   const [tickets, setTickets] = useState([]);
   const [ticketsLoading, setTicketsLoading] = useState(false);
   const [ticketsError, setTicketsError] = useState("");
-  const [conversationTicket, setConversationTicket] = useState(null);
+  const [selectedTicket, setSelectedTicket] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -98,7 +98,7 @@ export default function StudentPortal() {
   };
 
   return (
-    <main className="portal-page">
+    <main className={`portal-page${selectedTicket ? " student-ticket-open" : ""}`}>
       <header className="portal-top">
         <a className="signin-brand portal-brand" href="/student">
           <img className="ekc-logo ekc-logo-header" src="/assets/ekc-group-logo.png" alt="EKC Group — East Kent Colleges Group" />
@@ -117,8 +117,8 @@ export default function StudentPortal() {
         )}
       </header>
 
-      <div className="portal-content">
-        <section className="portal-intro">
+      <div className={`portal-content${selectedTicket ? " student-ticket-content" : ""}`}>
+        {!selectedTicket && <section className="portal-intro">
           <div className="signin-icon"><LuShieldCheck size={25} /></div>
           <div className="eyebrow">Student self-service</div>
           <Heading size="2xl" mt="2" mb="2">
@@ -129,7 +129,7 @@ export default function StudentPortal() {
               ? "Review the requests you have submitted and continue a conversation with the student helpdesk."
               : "Tell the student technician team what you need help with."}
           </Text>
-        </section>
+        </section>}
 
         {!account ? (
           <SignInCard error={error} disabled={inProgress !== InteractionStatus.None} onSignIn={signIn} />
@@ -137,13 +137,17 @@ export default function StudentPortal() {
           <>
             <StudentPortalNavigation isRequestsPage={isRequestsPage} />
             {isRequestsPage ? (
-              <StudentTicketList
-                tickets={tickets}
-                loading={ticketsLoading}
-                error={ticketsError}
-                onRefresh={refreshList}
-                onOpen={setConversationTicket}
-              />
+              selectedTicket ? (
+                <StudentTicketDetailsPage ticket={selectedTicket} onBack={() => setSelectedTicket(null)} />
+              ) : (
+                <StudentTicketList
+                  tickets={tickets}
+                  loading={ticketsLoading}
+                  error={ticketsError}
+                  onRefresh={refreshList}
+                  onOpen={setSelectedTicket}
+                />
+              )
             ) : (
               <StudentRequestPanel account={account} receipt={receipt} formKey={formKey} onSubmit={submit} />
             )}
@@ -155,13 +159,6 @@ export default function StudentPortal() {
         </p>
       </div>
 
-      {conversationTicket && (
-        <TicketConversation
-          ticket={conversationTicket}
-          audience="student"
-          onClose={() => setConversationTicket(null)}
-        />
-      )}
       <footer className="portal-footer">Campus Helpdesk · Demo environment · No TOPdesk connection</footer>
     </main>
   );
