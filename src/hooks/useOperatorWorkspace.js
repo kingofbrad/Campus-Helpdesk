@@ -247,6 +247,10 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
         ticket.status = "In progress";
         ticket.notes.push("Status changed to In progress.");
       }
+      if (action === "waiting") {
+        ticket.status = "Waiting for student";
+        ticket.notes.push("Status changed to Waiting for student.");
+      }
       if (action === "resolve") {
         ticket.status = "Resolved";
         ticket.notes.push(`Marked resolved by ${technicianName}.`);
@@ -356,4 +360,5 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     setCreateOpen,
   };
 }
+
 
