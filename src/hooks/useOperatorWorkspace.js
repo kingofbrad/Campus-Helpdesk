@@ -31,6 +31,8 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
   const [contentEditor, setContentEditor] = useState(null);
   const [page, setPage] = useState("queue");
   const [selected, setSelected] = useState(null);
+  const [ticketTabs, setTicketTabs] = useState([]);
+  const [activeTicketTabId, setActiveTicketTabId] = useState(null);
   const [conversationTicket, setConversationTicket] = useState(null);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("All statuses");
@@ -129,12 +131,18 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
   useEffect(() => {
     if (!databaseMode || !activeAccount) {
       setOperatorProfile(null);
+    setTicketTabs([]);
+    setActiveTicketTabId(null);
+    setSelected(null);
       setTicketLoading(false);
       return undefined;
     }
 
     let active = true;
     setOperatorProfile(null);
+    setTicketTabs([]);
+    setActiveTicketTabId(null);
+    setSelected(null);
     setTicketLoading(true);
     getOperatorProfile(instance, activeAccount)
       .then((profile) => {
@@ -335,6 +343,48 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     setContent((current) => ({ ...current, studentGuidance: saved }));
     setContentEditor(null); notify("Student guidance saved for all technicians.");
   };
+  const ticketTabKey = (ticket) => String(ticket?.databaseId || ticket?.id || "");
+  const openTicket = (ticket) => {
+    if (!ticket) return;
+    const id = ticketTabKey(ticket);
+    setTicketTabs((current) => current.some((tab) => tab.id === id) ? current.map((tab) => tab.id === id ? { ...tab, ticket } : tab) : [...current, { id, ticket }]);
+    setActiveTicketTabId(id);
+    setSelected(ticket);
+  };
+  const activateTicketTab = (id) => {
+    const tab = ticketTabs.find((item) => item.id === id);
+    if (!tab) return;
+    const currentTicket = tickets.find((ticket) => ticketTabKey(ticket) === id) || tab.ticket;
+    setActiveTicketTabId(id);
+    setSelected(currentTicket);
+  };
+  const closeTicketTab = (id) => {
+    const remaining = ticketTabs.filter((tab) => tab.id !== id);
+    setTicketTabs(remaining);
+    if (conversationTicket && ticketTabKey(conversationTicket) === id) setConversationTicket(null);
+    if (editing && activeTicketTabId === id) setEditing(false);
+    if (activeTicketTabId === id) {
+      const next = remaining[remaining.length - 1];
+      if (!next) { setActiveTicketTabId(null); setSelected(null); }
+      else {
+        const currentTicket = tickets.find((ticket) => ticketTabKey(ticket) === next.id) || next.ticket;
+        setActiveTicketTabId(next.id);
+        setSelected(currentTicket);
+      }
+    }
+  };
+  const dismissTicketDetails = () => setSelected(null);
+  useEffect(() => {
+    setTicketTabs((current) => {
+      let changed = false;
+      const next = current.map((tab) => {
+        const latest = tickets.find((ticket) => ticketTabKey(ticket) === tab.id);
+        if (latest && latest !== tab.ticket) { changed = true; return { ...tab, ticket: latest }; }
+        return tab;
+      });
+      return changed ? next : current;
+    });
+  }, [tickets]);
   const selectNotification = (item) => {
     const ticket = tickets.find((row) => row.databaseId === item.ticketDatabaseId);
     if (ticket) {
@@ -353,6 +403,12 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     page,
     setPage,
     selected,
+    ticketTabs: ticketTabs.map((tab) => ({ ...tab, ticket: tickets.find((ticket) => ticketTabKey(ticket) === tab.id) || tab.ticket })),
+    activeTicketTabId,
+    openTicket,
+    activateTicketTab,
+    closeTicketTab,
+    dismissTicketDetails,
     setSelected,
     conversationTicket,
     setConversationTicket,
@@ -404,6 +460,10 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     setCreateOpen,
   };
 }
+
+
+
+
 
 
 

@@ -21,6 +21,7 @@ import {
 import { AuthRedirectPage, OperatorSignInPage, ProfileLoadingPage } from "../components/auth/OperatorAuthScreens.jsx";
 import { technicianInitials } from "../utils/helpdesk.js";
 import ContentEditorDialog from "../components/operator/ContentEditorDialog.jsx";
+import { LuX } from "react-icons/lu";
 import DirectoryManagementPage from "./DirectoryManagementPage.jsx";
 
 export default function OperatorWorkspace() {
@@ -77,6 +78,18 @@ export default function OperatorWorkspace() {
           onClearNotifications={() => workspace.setNotifications([])}
           onSelectNotification={workspace.selectNotification}
         />
+        {workspace.ticketTabs.length > 0 && (
+          <div className="ticket-workspace-tabs" role="tablist" aria-label="Open tickets">
+            {workspace.ticketTabs.map((tab) => (
+              <div className={`ticket-workspace-tab ${workspace.activeTicketTabId === tab.id ? "active" : ""}`} key={tab.id}>
+                <button className="ticket-workspace-tab-select" type="button" role="tab" aria-selected={workspace.activeTicketTabId === tab.id} title={`${tab.ticket.id} · ${tab.ticket.title}`} onClick={() => workspace.activateTicketTab(tab.id)}>
+                  <strong>{tab.ticket.id}</strong><span>{tab.ticket.title}</span>
+                </button>
+                <button className="ticket-workspace-tab-close" type="button" aria-label={`Close ${tab.ticket.id}`} title={`Close ${tab.ticket.id}`} onClick={() => workspace.closeTicketTab(tab.id)}><LuX /></button>
+              </div>
+            ))}
+          </div>
+        )}
         <main className={`content ${["queue", "mine"].includes(workspace.page) ? "queue-content" : ""}`}>
           {workspace.page === "queue" && (
             <TicketQueuePage
@@ -96,7 +109,7 @@ export default function OperatorWorkspace() {
               onQueryChange={workspace.setQuery}
               onStatusChange={workspace.setStatus}
               onPriorityChange={workspace.setPriority}
-              onSelectTicket={workspace.setSelected}
+              onSelectTicket={workspace.openTicket}
               onCreateTicket={() => workspace.setCreateOpen(true)}
               displayAssignee={workspace.displayAssignee}
             />
@@ -114,7 +127,7 @@ export default function OperatorWorkspace() {
             />
           )}
           {workspace.page === "mine" && (
-            <MyTicketsPage tickets={workspace.myTickets} technicianName={identity.technicianName} onSelectTicket={workspace.setSelected} />
+            <MyTicketsPage tickets={workspace.myTickets} technicianName={identity.technicianName} onSelectTicket={workspace.openTicket} />
           )}
           {workspace.page === "guidance" && (
             <StudentGuidancePage
@@ -136,7 +149,7 @@ export default function OperatorWorkspace() {
         displayAssignee={workspace.displayAssignee}
         databaseMode={workspace.databaseMode}
         canManage={workspace.isAssignedToMe(selected)}
-        onClose={() => workspace.setSelected(null)}
+        onClose={workspace.dismissTicketDetails}
         onComments={() => workspace.setConversationTicket(selected)}
         onEdit={() => workspace.setEditing(true)}
         onAction={workspace.updateStatus}
@@ -171,6 +184,10 @@ export default function OperatorWorkspace() {
     </Flex>
   );
 }
+
+
+
+
 
 
 
