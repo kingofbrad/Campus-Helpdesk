@@ -188,6 +188,47 @@ export async function addTicketComment(instance, account, ticket, audience, mess
   }));
 }
 
+function mapHistoryEntry(row) {
+  return {
+    id: row.id,
+    actorType: row.actor_type,
+    actorName: row.technicians?.display_name || "",
+    eventType: row.event_type,
+    summary: row.summary,
+    fieldName: row.field_name || "",
+    oldValue: row.old_value || "",
+    newValue: row.new_value || "",
+    createdAt: new Date(row.created_at).toLocaleString(),
+  };
+}
+
+function mapInternalNote(row) {
+  return {
+    id: row.id,
+    note: row.note,
+    authorName: row.technicians?.display_name || "Technician",
+    createdAt: new Date(row.created_at).toLocaleString(),
+  };
+}
+
+export async function getTicketHistory(instance, account, ticket) {
+  const rows = asRows(await request(instance, account, "/tickets/" + encodeURIComponent(ticket.databaseId) + "/history"), "ticket history");
+  return rows.map(mapHistoryEntry);
+}
+
+export async function getInternalTicketNotes(instance, account, ticket) {
+  const rows = asRows(await request(instance, account, "/tickets/" + encodeURIComponent(ticket.databaseId) + "/internal-notes"), "internal ticket notes");
+  return rows.map(mapInternalNote);
+}
+
+export async function addInternalTicketNote(instance, account, ticket, note) {
+  const row = await request(instance, account, "/tickets/" + encodeURIComponent(ticket.databaseId) + "/internal-notes", {
+    method: "POST",
+    body: JSON.stringify({ note }),
+  });
+  return mapInternalNote(row);
+}
+
 export async function getStudentReplies(instance, account, since) {
   const rows = asRows(await request(instance, account, `/ticket-replies?since=${encodeURIComponent(since)}`), "student reply list");
   return rows.map((row) => ({
