@@ -10,7 +10,9 @@ After sign-in, the API identifies the technician by Entra tenant ID and object I
 
 Ticket references use `YY-MM-DD-NNNN`, such as `26-10-24-0001`. The counter starts at `0001` for each new day in the Europe/London timezone. The queue summary shows open, in-progress, waiting, and resolved counts from the signed-in technician's queue.
 
-The queue keeps its heading and summary in place while the assigned-ticket list scrolls inside its panel. Use **Refresh** in the top bar to fetch the latest assignments immediately. The app also checks every 30 seconds while the dashboard tab is visible. New tickets assigned since the last check and new student replies on your tickets appear in the bell notification centre. Select a ticket alert to open its details; select a reply alert to open the shared conversation, or clear the list when finished. Reply alerts are checked while the technician dashboard is open.
+The queue keeps its heading and summary in place while the assigned-ticket list scrolls inside its panel. Use **Refresh** in the top bar to fetch the latest assignments immediately. The app also checks every 30 seconds while the dashboard tab is visible. New tickets assigned since the last check and new student replies on your tickets appear in the bell notification centre. Select an alert to open the related ticket, or clear the list when finished. A student reply changes the ticket status to **Updated by student**. Reply alerts are checked while the technician dashboard is open.
+
+Selecting a ticket opens it as a full page. Ticket information is on the left and the shared conversation is on the right; the top and side navigation stay in place while you scroll. The conversation has its own scroll area. You can keep several tickets open in tabs, switch between them, and close a tab with its **X**. Use the queue navigation to return to the list.
 
 ## Student self-service portal
 
@@ -18,7 +20,7 @@ Technicians open `/operator` (the site root redirects there) and sign in with Mi
 
 Students can choose **My submitted tickets** to open `/student/requests`, a separate page listing requests linked to that Microsoft account, with a **Refresh list** button. Tickets are matched by Entra tenant and object ID, not by email address. Self-service tickets are linked automatically. A technician-created walk-up ticket is linked when the technician selects the student's Entra search result. Manually entered walk-up tickets are not linked and will not appear in a student's list. Run `supabase/migrations/003_student_request_identity.sql` before using this feature on an existing database. Tickets created before the identity columns were added do not have a submitter identity attached and will not appear in the student list unless linked separately.
 
-Select one of your tickets (or focus it and press Enter/Space) to open its conversation. Students can read helpdesk comments and send replies there. The assigned technician can open the ticket in the operator workspace and choose **Comments** to see and reply to the same thread. Every comment is shared with both parties; the demo does not provide private notes. Existing Supabase projects must also run migration `004_ticket_comments.sql` to create the comments table.
+Select one of your tickets (or focus it and press Enter/Space) to open its full-page details. Ticket information appears on the left and the conversation on the right. The portal header and navigation stay visible, and the ticket details and comments scroll independently. Use **My submitted tickets** to return to the list. Students can read helpdesk comments and send replies there. The assigned technician sees and replies to the same conversation on the ticket page. Every comment is shared with both parties; the demo does not provide private notes. Existing Supabase projects must also run migration `004_ticket_comments.sql` to create the comments table.
 
 The technician sign-in page links to the portal. Students need the existing Microsoft sign-in and delegated helpdesk API scope configured. The API validates the Entra token; students do not need a row in the `technicians` table.
 
@@ -30,9 +32,10 @@ Directory search requires the technician app registration to have Microsoft Grap
 
 ## Working a ticket
 
-Open a ticket to review the request, requester, category, priority, assignment, and activity notes. Choose **Comments** to view and reply to the shared student conversation. Choose **Edit ticket** to correct the student name or email, issue title or description, category, or priority. The ticket site and technician assignment remain unchanged, and the update is recorded in the activity timeline. Available actions are:
+Open a ticket to review the request, requester, category, priority, assignment, and activity notes. Its full-page view keeps ticket information on the left and the shared conversation on the right. Choose **Edit ticket** to correct the student name or email, issue title or description, category, or priority. The ticket site and technician assignment remain unchanged, and the update is recorded in the activity timeline. Available actions are:
 
 - **Mark in progress** updates the assigned ticket's status. The sidebar profile and queue greeting use the signed-in Microsoft profile name.
+- **Waiting for student** marks the ticket as awaiting a student response. A reply changes it to **Updated by student** and triggers an in-app notification for the technician.
 - **Resolve** changes its status to Resolved.
 - **Escalate to IT** opens a handover preview containing the issue, category, priority, troubleshooting notes, and contact details.
 
@@ -40,11 +43,11 @@ Confirming the handover marks the demo ticket as Escalated and assigns it to “
 
 ## Knowledge base
 
-Choose **Knowledge base** to search sample troubleshooting articles. Guides cover eduroam, slow devices, account access, printing, classroom equipment, and mobile email. The demo content is an example; replace it with procedures reviewed and approved by the school before any pilot.
+Choose **Knowledge base** to search troubleshooting articles. Guides cover eduroam, slow devices, account access, printing, classroom equipment, and mobile email. The technician account with directory-management permission can add and edit guides. In Supabase mode, edits are saved to the database; migration `008_knowledge_content.sql` must be applied first. Other technicians can browse the guides but cannot edit them. The demo content is an example; replace it with procedures reviewed and approved by the school before any pilot.
 
 ## Student guidance
 
-The guidance page demonstrates safe working principles: understand the request, use approved steps, protect privacy, and escalate issues outside the student technician’s training.
+The guidance page demonstrates safe working principles: understand the request, use approved steps, protect privacy, and escalate issues outside the student technician’s training. The directory manager can edit this guidance in the app; in Supabase mode it is saved to the database and requires migration `008_knowledge_content.sql`.
 
 ## Demo data and privacy
 
