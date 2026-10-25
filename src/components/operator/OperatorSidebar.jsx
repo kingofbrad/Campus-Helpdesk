@@ -14,7 +14,7 @@ export default function OperatorSidebar({ page, openCount, technicianName, initi
   return (
     <aside className="sidebar">
       <div className="brand">
-        <img className="ekc-logo ekc-logo-sidebar" src="/assets/ekc-group-logo.png" alt="EKC Group — East Kent Colleges Group" />
+        <img className="ekc-logo ekc-logo-sidebar" src="/assets/EKC_Group_Footer.svg" alt="EKC Group — East Kent Colleges Group" />
         <div><b>Student Helpdesk</b><small>Student Support Desk</small></div>
       </div>
       <div className="nav-label">Workspace</div>
