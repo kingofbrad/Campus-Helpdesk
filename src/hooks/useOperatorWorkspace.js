@@ -347,16 +347,17 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
   const openTicket = (ticket) => {
     if (!ticket) return;
     const id = ticketTabKey(ticket);
-    setTicketTabs((current) => current.some((tab) => tab.id === id) ? current.map((tab) => tab.id === id ? { ...tab, ticket } : tab) : [...current, { id, ticket }]);
+    const openedTicket = { ...ticket, unreadCommentCount: 0, latestUnreadCommentAt: null };
+    setTickets((current) => current.map((row) => ticketTabKey(row) === id ? openedTicket : row));
+    setTicketTabs((current) => current.some((tab) => tab.id === id) ? current.map((tab) => tab.id === id ? { ...tab, ticket: openedTicket } : tab) : [...current, { id, ticket: openedTicket }]);
     setActiveTicketTabId(id);
-    setSelected(ticket);
+    setSelected(openedTicket);
   };
   const activateTicketTab = (id) => {
     const tab = ticketTabs.find((item) => item.id === id);
     if (!tab) return;
     const currentTicket = tickets.find((ticket) => ticketTabKey(ticket) === id) || tab.ticket;
-    setActiveTicketTabId(id);
-    setSelected(currentTicket);
+    openTicket(currentTicket);
   };
   const closeTicketTab = (id) => {
     const remaining = ticketTabs.filter((tab) => tab.id !== id);
@@ -388,7 +389,7 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     const ticket = tickets.find((row) => row.databaseId === item.ticketDatabaseId);
     if (ticket) {
       setPage("queue");
-      setSelected(ticket);
+      openTicket(ticket);
     }
     setNotificationsOpen(false);
   };
