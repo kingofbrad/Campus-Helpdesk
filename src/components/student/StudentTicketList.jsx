@@ -35,7 +35,7 @@ function TicketCard({ ticket, onOpen }) {
       tabIndex={0}
       onClick={onOpen}
       onKeyDown={handleKeyDown}
-      aria-label={`Open comments for ${ticket.title}`}
+      aria-label={`Open ticket ${ticket.title}`}
     >
       <div className="student-ticket-main">
         <div className="student-ticket-title"><b>{ticket.title}</b><small>{ticket.id} · {ticket.category}</small></div>
@@ -46,7 +46,7 @@ function TicketCard({ ticket, onOpen }) {
         <span>{ticket.site || "Campus site"}</span>
         <span>Submitted {ticket.submitted}</span>
         <span>{ticket.assignee}</span>
-        <span className="student-ticket-comments">View conversation →</span>
+        <span className="student-ticket-comments">Open ticket →</span>
       </div>
     </article>
   );
