@@ -76,7 +76,7 @@ export default function OperatorWorkspace() {
           onClearNotifications={() => workspace.setNotifications([])}
           onSelectNotification={workspace.selectNotification}
         />
-        <main className={`content ${workspace.page === "queue" ? "queue-content" : ""}`}>
+        <main className={`content ${["queue", "mine"].includes(workspace.page) ? "queue-content" : ""}`}>
           {workspace.page === "queue" && (
             <TicketQueuePage
               databaseMode={workspace.databaseMode}
@@ -148,4 +148,5 @@ export default function OperatorWorkspace() {
     </Flex>
   );
 }
+
 
