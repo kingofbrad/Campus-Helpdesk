@@ -65,7 +65,7 @@ body {
   font-size: 10px;
   letter-spacing: .11em;
   text-transform: uppercase;
-  color: #04403e;
+  color: #ffffff;
   padding: 11px 12px 7px;
 }
 .nav-label.resources {
@@ -74,7 +74,7 @@ body {
 .nav-item {
   border: 0;
   background: transparent;
-  color: #c6d2df;
+  color: #ffffff;
   width: 100%;
   text-align: left;
   padding: 11px 12px;
