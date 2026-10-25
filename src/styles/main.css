@@ -2045,15 +2045,15 @@ td b {
 }
 .ticket-full-page-body {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(260px, 0.8fr);
+  grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.5fr);
 }
 .ticket-full-page-main {
+  min-width: 0;
   padding: 26px 28px;
 }
-.ticket-full-page-side {
-  padding: 10px 24px 24px;
-  border-left: 1px solid #e5eaf0;
-  background: #fbfcfd;
+.ticket-information-grid {
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 18px;
 }
 .ticket-full-page-actions {
   margin: 0;
@@ -2068,11 +2068,7 @@ td b {
   .ticket-full-page-main {
     padding: 22px 18px;
   }
-  .ticket-full-page-side {
-    border-top: 1px solid #e5eaf0;
-    border-left: 0;
-    padding: 6px 18px 20px;
-  }
+
   .ticket-full-page-head {
     padding: 17px 18px;
   }
@@ -2082,16 +2078,23 @@ td b {
 }
 
 .conversation-inline {
-  padding: 22px 26px 24px;
-  border-top: 1px solid #e5eaf0;
-  background: #fff;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: min(68vh, 760px);
+  min-height: 500px;
+  padding: 20px 22px;
+  border-left: 1px solid #e5eaf0;
+  background: #fbfcfd;
 }
 .conversation-inline-head {
   margin-bottom: 12px;
 }
 .conversation-inline .conversation-list {
-  max-height: 420px;
-  min-height: 150px;
+  flex: 1;
+  max-height: none;
+  min-height: 0;
+  overflow-y: auto;
   border-bottom: 1px solid #e8edf2;
 }
 .conversation-inline .conversation-summary {
@@ -2102,10 +2105,22 @@ td b {
 }
 @media (max-width: 700px) {
   .conversation-inline {
+    height: auto;
+    min-height: 0;
     padding: 20px 18px;
+    border-top: 1px solid #e5eaf0;
+    border-left: 0;
+  }
+  .conversation-inline .conversation-list {
+    flex: none;
+    max-height: 420px;
+    min-height: 150px;
   }
   .conversation-inline .comment-bubble {
     width: 96%;
   }
 }
+
+
+
 

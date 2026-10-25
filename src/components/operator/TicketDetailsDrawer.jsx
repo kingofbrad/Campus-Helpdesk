@@ -15,10 +15,17 @@ export default function TicketDetailsDrawer({ ticket, technicianName, displayAss
           <Badge colorPalette={priorityColors[ticket.priority]} variant="subtle" rounded="full">{ticket.priority} priority</Badge>
         </div>
       </header>
-      <div className="ticket-full-page-body">
+      <div className={databaseMode ? "ticket-full-page-body" : "ticket-full-page-body single-column"}>
         <div className="ticket-full-page-main">
           <Heading size="xl" mb="2">{ticket.title}</Heading>
           <Text fontSize="sm" color="gray.600">Submitted by {ticket.student} · {ticket.updated}</Text>
+          <div className="detail-label">Ticket information</div>
+          <div className="info-grid ticket-information-grid">
+            <div><small>Category</small><b>{ticket.category}</b></div>
+            <div><small>Assigned to</small><b>{displayAssignee(ticket)}</b></div>
+            <div><small>Contact</small><b>{ticket.email}</b></div>
+            <div><small>Priority</small><b>{ticket.priority}</b></div>
+          </div>
           <div className="detail-label">Issue description</div>
           <div className="description">{ticket.description}</div>
           <div className="detail-label">Activity &amp; notes</div>
@@ -31,17 +38,8 @@ export default function TicketDetailsDrawer({ ticket, technicianName, displayAss
             ))}
           </div>
         </div>
-        <aside className="ticket-full-page-side">
-          <div className="detail-label">Ticket information</div>
-          <div className="info-grid">
-            <div><small>Category</small><b>{ticket.category}</b></div>
-            <div><small>Assigned to</small><b>{displayAssignee(ticket)}</b></div>
-            <div><small>Contact</small><b>{ticket.email}</b></div>
-            <div><small>Priority</small><b>{ticket.priority}</b></div>
-          </div>
-        </aside>
+        {databaseMode && <TicketConversation ticket={ticket} audience="technician" readOnly={!canManage} inline />}
       </div>
-      {databaseMode && <TicketConversation ticket={ticket} audience="technician" readOnly={!canManage} inline />}
       <div className="ticket-actions ticket-full-page-actions">
         {canManage && <>
           <Button size="sm" variant="outline" onClick={onEdit}>Edit ticket</Button>
@@ -55,7 +53,5 @@ export default function TicketDetailsDrawer({ ticket, technicianName, displayAss
     </section>
   );
 }
-
-
 
 
