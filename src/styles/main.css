@@ -2206,3 +2206,108 @@ td b {
 
 
 
+
+
+/* Student ticket details stay inside the portal shell, with independent detail and conversation scrolling. */
+.portal-page.student-ticket-open {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
+.portal-page.student-ticket-open .portal-top,
+.portal-page.student-ticket-open .portal-footer {
+  flex: 0 0 auto;
+}
+.portal-content.student-ticket-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  padding: 16px clamp(16px, 3vw, 42px);
+}
+.student-ticket-content .student-portal-nav {
+  flex: 0 0 auto;
+  margin-bottom: 12px;
+}
+.student-ticket-content .portal-privacy {
+  display: none;
+}
+.student-ticket-detail {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.student-ticket-detail .ticket-full-page-head {
+  flex: 0 0 auto;
+}
+.student-ticket-detail-heading {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.student-ticket-detail-heading .eyebrow {
+  margin-top: 12px;
+}
+.student-ticket-detail .ticket-full-page-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.student-ticket-detail .ticket-full-page-main {
+  overflow-y: auto;
+}
+.student-ticket-detail .conversation-inline {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+  overflow: hidden;
+}
+.student-ticket-detail .conversation-inline .conversation-list {
+  min-height: 0;
+  overflow-y: auto;
+}
+.student-ticket-open .portal-footer {
+  padding: 8px 20px 12px;
+}
+@media (max-width: 700px) {
+  .portal-content.student-ticket-content {
+    padding: 10px 12px;
+  }
+  .student-ticket-detail .ticket-full-page-head {
+    align-items: flex-start;
+    padding: 13px;
+  }
+  .student-ticket-detail-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .student-ticket-detail-heading .eyebrow {
+    margin-top: 0;
+  }
+  .student-ticket-detail .ticket-full-page-body {
+    display: flex;
+    flex-direction: column;
+  }
+  .student-ticket-detail .ticket-full-page-main {
+    flex: 0 1 42%;
+    min-height: 120px;
+    padding: 16px;
+  }
+  .student-ticket-detail .conversation-inline {
+    flex: 1 1 58%;
+    min-height: 0;
+    padding: 14px;
+  }
+  .student-ticket-detail .conversation-inline .conversation-list {
+    flex: 1;
+    max-height: none;
+  }
+}
