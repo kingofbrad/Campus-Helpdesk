@@ -20,6 +20,7 @@ import {
 } from "../components/operator/WorkspaceDialogs.jsx";
 import { AuthRedirectPage, OperatorSignInPage, ProfileLoadingPage } from "../components/auth/OperatorAuthScreens.jsx";
 import { technicianInitials } from "../utils/helpdesk.js";
+import ContentEditorDialog from "../components/operator/ContentEditorDialog.jsx";
 import DirectoryManagementPage from "./DirectoryManagementPage.jsx";
 
 export default function OperatorWorkspace() {
@@ -101,12 +102,28 @@ export default function OperatorWorkspace() {
             />
           )}
           {workspace.page === "knowledge" && (
-            <KnowledgeBasePage query={workspace.guideQuery} onQueryChange={workspace.setGuideQuery} onOpenGuide={workspace.setActiveGuide} />
+            <KnowledgeBasePage
+              query={workspace.guideQuery}
+              onQueryChange={workspace.setGuideQuery}
+              onOpenGuide={workspace.setActiveGuide}
+              guides={workspace.contentGuides}
+              contentError={workspace.contentError}
+              canManageContent={workspace.canManageDirectory}
+              onAddGuide={() => workspace.setContentEditor({ type: "guide" })}
+              onEditGuide={(guide) => workspace.setContentEditor({ type: "guide", guide })}
+            />
           )}
           {workspace.page === "mine" && (
             <MyTicketsPage tickets={workspace.myTickets} technicianName={identity.technicianName} onSelectTicket={workspace.setSelected} />
           )}
-          {workspace.page === "guidance" && <StudentGuidancePage />}
+          {workspace.page === "guidance" && (
+            <StudentGuidancePage
+              guidance={workspace.studentGuidance}
+              contentError={workspace.contentError}
+              canManageContent={workspace.canManageDirectory}
+              onEdit={() => workspace.setContentEditor({ type: "guidance", guidance: workspace.studentGuidance })}
+            />
+          )}
           {workspace.page === "directory" && workspace.canManageDirectory && (
             <DirectoryManagementPage instance={identity.instance} account={activeAccount} />
           )}
@@ -134,6 +151,12 @@ export default function OperatorWorkspace() {
         />
       )}
       <GuideDialog guide={workspace.activeGuide} onClose={() => workspace.setActiveGuide(null)} />
+      <ContentEditorDialog
+        editor={workspace.contentEditor}
+        onClose={() => workspace.setContentEditor(null)}
+        onSave={workspace.contentEditor?.type === "guidance" ? workspace.saveGuidance : workspace.saveGuide}
+        onDelete={workspace.removeGuide}
+      />
       <EditTicketDialog ticket={workspace.editing ? selected : null} onSave={workspace.saveTicketDetails} onClose={() => workspace.setEditing(false)} />
       <CreateTicketDialog open={workspace.createOpen} onCreate={workspace.createTicket} onClose={() => workspace.setCreateOpen(false)} />
       <EscalationDialog
@@ -148,5 +171,10 @@ export default function OperatorWorkspace() {
     </Flex>
   );
 }
+
+
+
+
+
 
 

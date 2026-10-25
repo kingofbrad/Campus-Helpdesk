@@ -85,6 +85,21 @@ export async function getOperatorProfile(instance, account) {
   return request(instance, account, "/operator/profile");
 }
 
+export async function getOperatorContent(instance, account) {
+  return request(instance, account, "/operator/content");
+}
+export async function createKnowledgeGuide(instance, account, values) {
+  return request(instance, account, "/admin/knowledge-guides", { method: "POST", body: JSON.stringify(values) });
+}
+export async function updateKnowledgeGuide(instance, account, id, values) {
+  return request(instance, account, "/admin/knowledge-guides/" + encodeURIComponent(id), { method: "PATCH", body: JSON.stringify(values) });
+}
+export async function deleteKnowledgeGuide(instance, account, id) {
+  return request(instance, account, "/admin/knowledge-guides/" + encodeURIComponent(id), { method: "DELETE" });
+}
+export async function updateStudentGuidance(instance, account, values) {
+  return request(instance, account, "/admin/student-guidance", { method: "PUT", body: JSON.stringify(values) });
+}
 export async function getDirectory(instance, account) {
   return request(instance, account, "/admin/directory");
 }
@@ -193,4 +208,6 @@ export async function updateTicket(instance, account, ticket, action) {
     body: JSON.stringify({ action }),
   });
 }
+
+
 

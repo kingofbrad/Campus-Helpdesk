@@ -3,6 +3,11 @@ import {
   databaseMode,
   getStudentReplies,
   getOperatorProfile,
+  getOperatorContent,
+  createKnowledgeGuide,
+  updateKnowledgeGuide,
+  deleteKnowledgeGuide,
+  updateStudentGuidance,
   getTickets,
   performTicketAction,
   submitTechnicianTicket,
@@ -21,6 +26,9 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
   const [ticketLoading, setTicketLoading] = useState(databaseMode);
   const [ticketError, setTicketError] = useState("");
   const [operatorProfile, setOperatorProfile] = useState(null);
+  const [content, setContent] = useState(null);
+  const [contentError, setContentError] = useState("");
+  const [contentEditor, setContentEditor] = useState(null);
   const [page, setPage] = useState("queue");
   const [selected, setSelected] = useState(null);
   const [conversationTicket, setConversationTicket] = useState(null);
@@ -144,6 +152,12 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     };
   }, [instance, activeAccount?.homeAccountId]);
 
+  useEffect(() => {
+    if (!databaseMode || !activeAccount || !operatorProfile) { setContent(null); return undefined; }
+    let active = true;
+    getOperatorContent(instance, activeAccount).then((result) => { if (active) { setContent(result); setContentError(""); } }).catch((error) => { if (active) setContentError(error.message || "Could not load helpdesk content. Run the content database migration and refresh."); });
+    return () => { active = false; };
+  }, [instance, activeAccount?.homeAccountId, operatorProfile?.id]);
   useEffect(() => {
     if (!databaseMode || !activeAccount || !operatorProfile) {
       setTicketLoading(false);
@@ -299,6 +313,28 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     notify("Ticket added to this demo queue.");
   };
 
+  const saveGuide = async (values) => {
+    const editingGuide = contentEditor?.guide;
+    if (editingGuide) {
+      const saved = await updateKnowledgeGuide(instance, activeAccount, editingGuide.id, values);
+      setContent((current) => ({ ...current, knowledgeGuides: current.knowledgeGuides.map((guide) => guide.id === saved.id ? saved : guide) }));
+    } else {
+      const id = values.title.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || `guide-${Date.now()}`;
+      const saved = await createKnowledgeGuide(instance, activeAccount, { ...values, id });
+      setContent((current) => ({ ...current, knowledgeGuides: [...(current?.knowledgeGuides || []), saved].sort((a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title)) }));
+    }
+    setContentEditor(null); notify("Knowledge guide saved for all technicians.");
+  };
+  const removeGuide = async (guide) => {
+    await deleteKnowledgeGuide(instance, activeAccount, guide.id);
+    setContent((current) => ({ ...current, knowledgeGuides: current.knowledgeGuides.filter((item) => item.id !== guide.id) }));
+    setContentEditor(null); notify("Knowledge guide removed.");
+  };
+  const saveGuidance = async (values) => {
+    const saved = await updateStudentGuidance(instance, activeAccount, values);
+    setContent((current) => ({ ...current, studentGuidance: saved }));
+    setContentEditor(null); notify("Student guidance saved for all technicians.");
+  };
   const selectNotification = (item) => {
     const ticket = tickets.find((row) => row.databaseId === item.ticketDatabaseId);
     if (ticket) {
@@ -329,6 +365,14 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     guideQuery,
     setGuideQuery,
     activeGuide,
+    contentGuides: content?.knowledgeGuides || null,
+    studentGuidance: content?.studentGuidance || null,
+    contentError,
+    contentEditor,
+    setContentEditor,
+    saveGuide,
+    removeGuide,
+    saveGuidance,
     setActiveGuide,
     toast,
     notifications,
@@ -360,5 +404,7 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     setCreateOpen,
   };
 }
+
+
 
 

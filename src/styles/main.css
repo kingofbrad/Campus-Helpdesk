@@ -1939,4 +1939,19 @@ td b {
     font-size: 11px;
   }
 }
+.guide-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.content-step-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.guidance-edit-item {
+  display: grid;
+  gap: 8px;
+}
 

@@ -164,6 +164,22 @@ async function requireTechnician(req) {
   return { ...rows[0], tenantId: identity.tenantId };
 }
 
+function validateGuideInput(input, partial = false) {
+  const updates = {};
+  if (!partial || input.title !== undefined) updates.title = requiredText(input.title, "Guide title", 140);
+  if (!partial || input.category !== undefined) updates.category = requiredText(input.category, "Guide category", 80);
+  if (!partial || input.summary !== undefined) updates.summary = requiredText(input.summary, "Guide summary", 500);
+  if (!partial || input.steps !== undefined) {
+    if (!Array.isArray(input.steps) || input.steps.length < 1 || input.steps.length > 20) throw invalid("Add between 1 and 20 guide steps.");
+    updates.steps = input.steps.map((step) => requiredText(step, "Guide step", 500));
+  }
+  if (!partial || input.icon_key !== undefined) {
+    const icon = requiredText(input.icon_key, "Guide icon", 24);
+    if (!["wifi", "laptop", "shield", "printer", "volume", "help"].includes(icon)) throw invalid("Choose a supported guide icon.");
+    updates.icon_key = icon;
+  }
+  return updates;
+}
 function requireDirectoryAdmin(technician) {
   if (!technician.can_manage_directory) {
     const error = new Error("You do not have permission to manage helpdesk sites or technicians.");
@@ -374,6 +390,38 @@ export async function handleRequest(req, res) {
         const [sites, technicians] = await Promise.all([getDirectorySites(), getDirectoryTechnicians()]);
         return json(res, 200, { sites, technicians, tenantId: technician.tenantId });
       }
+      if (req.method === "POST" && url.pathname === "/api/admin/knowledge-guides") {
+        const input = await readBody(req);
+        const id = requiredText(input.id, "Guide ID", 80).toLowerCase();
+        if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)) throw invalid("Guide ID may contain lowercase letters, numbers, and hyphens.");
+        const rows = await supabase("knowledge_guides?select=id,title,category,summary,steps,icon_key,sort_order,is_published", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify({ id, ...validateGuideInput(input), sort_order: Number.isInteger(input.sort_order) ? input.sort_order : 100 }) });
+        return json(res, 201, rows[0]);
+      }
+      const guideMatch = url.pathname.match(/^\/api\/admin\/knowledge-guides\/([a-z0-9-]+)$/i);
+      if (guideMatch && req.method === "PATCH") {
+        const input = await readBody(req);
+        const updates = validateGuideInput(input, true);
+        if (input.sort_order !== undefined) updates.sort_order = Number(input.sort_order) || 0;
+        if (input.is_published !== undefined) updates.is_published = Boolean(input.is_published);
+        if (!Object.keys(updates).length) throw invalid("Provide guide content to update.");
+        updates.updated_at = new Date().toISOString();
+        const rows = await supabase(`knowledge_guides?${new URLSearchParams({ id: `eq.${guideMatch[1]}`, select: "id,title,category,summary,steps,icon_key,sort_order,is_published" })}`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify(updates) });
+        if (!rows?.length) return json(res, 404, { error: "That guide could not be found." });
+        return json(res, 200, rows[0]);
+      }
+      if (guideMatch && req.method === "DELETE") {
+        await supabase(`knowledge_guides?${new URLSearchParams({ id: `eq.${guideMatch[1]}` })}`, { method: "DELETE" });
+        return json(res, 200, { ok: true });
+      }
+      if (req.method === "PUT" && url.pathname === "/api/admin/student-guidance") {
+        const input = await readBody(req);
+        const title = requiredText(input.title, "Page title", 140);
+        const subtitle = requiredText(input.subtitle, "Page subtitle", 500);
+        if (!Array.isArray(input.items) || input.items.length < 1 || input.items.length > 12) throw invalid("Add between 1 and 12 guidance items.");
+        const items = input.items.map((item) => ({ heading: requiredText(item.heading, "Guidance heading", 140), text: requiredText(item.text, "Guidance text", 1000) }));
+        const rows = await supabase("student_guidance?on_conflict=id&select=id,title,subtitle,items", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=representation" }, body: JSON.stringify({ id: true, title, subtitle, items, updated_at: new Date().toISOString() }) });
+        return json(res, 200, rows[0]);
+      }
       if (req.method === "POST" && url.pathname === "/api/admin/sites") {
         const input = await readBody(req);
         const code = requiredText(input.code, "Site code", 40).toLowerCase();
@@ -465,6 +513,13 @@ export async function handleRequest(req, res) {
       return json(res, 200, await supabase(`ticket_comments?${query}`));
     }
 
+    if (req.method === "GET" && url.pathname === "/api/operator/content") {
+      const [guides, guidanceRows] = await Promise.all([
+        supabase(`knowledge_guides?${new URLSearchParams({ select: "id,title,category,summary,steps,icon_key,sort_order,is_published", is_published: "eq.true", order: "sort_order.asc,title.asc" })}`),
+        supabase(`student_guidance?${new URLSearchParams({ select: "id,title,subtitle,items", id: "eq.true", limit: "1" })}`),
+      ]);
+      return json(res, 200, { knowledgeGuides: guides || [], studentGuidance: guidanceRows?.[0] || null });
+    }
     if (req.method === "GET" && url.pathname === "/api/operator/profile") {
       return json(res, 200, {
         id: technician.id,
@@ -553,5 +608,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
 }
 
 export default handleRequest;
+
+
 
 

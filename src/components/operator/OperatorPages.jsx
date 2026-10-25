@@ -1,5 +1,5 @@
 import { Badge, Button, Heading, Input, Text } from "@chakra-ui/react";
-import { LuPlus, LuSearch } from "react-icons/lu";
+import { LuCircleHelp, LuLaptop, LuPlus, LuPrinter, LuSearch, LuShieldCheck, LuVolume2, LuWifi } from "react-icons/lu";
 import {
   knowledgeGuides,
   priorityColors,
@@ -191,91 +191,39 @@ export function MyTicketsPage({ tickets, technicianName, onSelectTicket }) {
   );
 }
 
-export function KnowledgeBasePage({ query, onQueryChange, onOpenGuide }) {
-  const matchingGuides = knowledgeGuides.filter((guide) =>
-    `${guide.title} ${guide.category} ${guide.summary}`
-      .toLowerCase()
-      .includes(query.toLowerCase()),
-  );
-  return (
-    <>
-      <PageHeading
-        eyebrow="Student technician resources"
-        title="Knowledge base"
-        subtitle="Quick guides for common campus IT issues."
-      />
-      <div className="guide-filter">
-        <div className="search-box">
-          <LuSearch />
-          <Input
-            value={query}
-            onChange={(event) => onQueryChange(event.target.value)}
-            placeholder="Search troubleshooting guides…"
-            size="sm"
-          />
-        </div>
-        <small>Guidance for student technicians</small>
-      </div>
-      <div className="guide-grid">
-        {matchingGuides.map((guide) => (
-          <GuideCard
-            key={guide.title}
-            guide={guide}
-            onOpen={() => onOpenGuide(guide)}
-          />
-        ))}
-      </div>
-    </>
-  );
+const guideIcons = { wifi: LuWifi, laptop: LuLaptop, shield: LuShieldCheck, printer: LuPrinter, volume: LuVolume2, help: LuCircleHelp };
+
+export function KnowledgeBasePage({ query, onQueryChange, onOpenGuide, guides, canManageContent, onAddGuide, onEditGuide, contentError }) {
+  const sourceGuides = guides || knowledgeGuides.map((guide, index) => ({ ...guide, id: `demo-${index}`, icon_key: Object.keys(guideIcons).find((key) => guideIcons[key] === guide.icon) || "help" }));
+  const matchingGuides = sourceGuides.filter((guide) => `${guide.title} ${guide.category} ${guide.summary}`.toLowerCase().includes(query.toLowerCase()));
+  return <>
+    {contentError && <div className="notice" role="alert">{contentError}</div>}
+    <PageHeading eyebrow="Student technician resources" title="Knowledge base" subtitle="Quick guides for common campus IT issues.">
+      {canManageContent && <Button colorPalette="ekc" onClick={onAddGuide}><LuPlus /> Add guide</Button>}
+    </PageHeading>
+    <div className="guide-filter"><div className="search-box"><LuSearch /><Input value={query} onChange={(event) => onQueryChange(event.target.value)} placeholder="Search troubleshooting guides…" size="sm" /></div><small>Guidance for student technicians</small></div>
+    <div className="guide-grid">{matchingGuides.map((guide) => {
+      const Icon = guide.icon || guideIcons[guide.icon_key] || LuCircleHelp;
+      return <GuideCard key={guide.id || guide.title} guide={{ ...guide, icon: Icon }} onOpen={() => onOpenGuide({ ...guide, icon: Icon })} onEdit={canManageContent ? () => onEditGuide(guide) : null} />;
+    })}</div>
+  </>;
 }
 
-export function StudentGuidancePage() {
-  const principles = [
-    [
-      "1. Understand the issue",
-      "Read the request carefully. Ask clear follow-up questions if anything is missing.",
-    ],
-    [
-      "2. Use approved guidance",
-      "Follow the knowledge base. Record what you tried and what happened.",
-    ],
-    [
-      "3. Protect privacy",
-      "Only access information needed to help. Never ask for passwords or share sensitive details.",
-    ],
-    [
-      "4. Escalate when needed",
-      "If an issue is outside your training, affects safety or security, or remains unresolved, hand it to staff.",
-    ],
+export function StudentGuidancePage({ guidance, canManageContent, onEdit, contentError }) {
+  const principles = guidance?.items || [
+    { heading: "1. Understand the issue", text: "Read the request carefully. Ask clear follow-up questions if anything is missing." },
+    { heading: "2. Use approved guidance", text: "Follow the knowledge base. Record what you tried and what happened." },
+    { heading: "3. Protect privacy", text: "Only access information needed to help. Never ask for passwords or share sensitive details." },
+    { heading: "4. Escalate when needed", text: "If an issue is outside your training, affects safety or security, or remains unresolved, hand it to staff." },
   ];
-  return (
-    <>
-      <PageHeading
-        eyebrow="Working safely and professionally"
-        title="Student guidance"
-        subtitle="A few principles for supporting your fellow students."
-      />
-      <section className="panel guidance">
-        <Heading size="md" mb="5">
-          How we work
-        </Heading>
-        <div className="principles">
-          {principles.map(([heading, text]) => (
-            <div key={heading}>
-              <b>{heading}</b>
-              <p>{text}</p>
-            </div>
-          ))}
-        </div>
-        <div className="notice">
-          Portfolio prototype with sample data. It is not connected to school
-          systems or real student records.
-        </div>
-      </section>
-    </>
-  );
+  return <>
+    {contentError && <div className="notice" role="alert">{contentError}</div>}
+    <PageHeading eyebrow="Working safely and professionally" title={guidance?.title || "Student guidance"} subtitle={guidance?.subtitle || "A few principles for supporting your fellow students."}>
+      {canManageContent && <Button colorPalette="ekc" variant="outline" onClick={onEdit}>Edit guidance</Button>}
+    </PageHeading>
+    <section className="panel guidance"><Heading size="md" mb="5">How we work</Heading><div className="principles">{principles.map(({ heading, text }, index) => <div key={`${heading}-${index}`}><b>{heading}</b><p>{text}</p></div>)}</div><div className="notice">Follow school guidance and stay within your training. If in doubt, ask a staff member.</div></section>
+  </>;
 }
-
 function TicketTable({
   tickets,
   onSelectTicket,
@@ -352,7 +300,7 @@ function TicketTable({
   );
 }
 
-function GuideCard({ guide, onOpen }) {
+function GuideCard({ guide, onOpen, onEdit }) {
   const Icon = guide.icon;
   return (
     <article className="guide-card">
@@ -362,8 +310,9 @@ function GuideCard({ guide, onOpen }) {
       <div className="eyebrow category-label">{guide.category}</div>
       <h3>{guide.title}</h3>
       <p>{guide.summary}</p>
-      <button onClick={onOpen}>Open guide →</button>
+      <div className="guide-card-actions"><button onClick={onOpen}>Open guide →</button>{onEdit && <button onClick={onEdit}>Edit</button>}</div>
     </article>
   );
 }
+
 
