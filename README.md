@@ -38,12 +38,15 @@ npm.cmd run dev
 - Optional read-only, cross-site ticket visibility for trusted technician accounts
 - Manual refresh and 30-second new-ticket checks with an in-app notification centre
 - In-app alerts when students reply to assigned tickets
-- Ticket detail drawer with requester, issue, assignment, and activity
+- Full-page technician ticket details with requester, issue, assignment, activity, and shared comments
+- Multiple open technician tickets in tabs, with fixed navigation while viewing a ticket
 - Technician ticket editing with assignment checks and an activity record
-- Assign, mark in progress, resolve, and simulated escalation actions
+- Assign, mark in progress, wait for a student, resolve, and simulated escalation actions
+- Student replies update the ticket status and notify the assigned technician
 - Searchable knowledge base with common Wi-Fi, device, account, printing, and classroom guides
 - Student technician guidance on privacy and when to escalate
-- Student self-service ticket submission and personal ticket history
+- Admin editing for knowledge base articles and student guidance
+- Student self-service ticket submission, personal ticket history, and full-page ticket details with a shared conversation
 - Shared ticket comments where students and assigned technicians can read and reply
 - Technician ticket creation on a student behalf
 - Entra student directory search that fills in the requester name, email, and matching site for walk-up tickets
@@ -68,7 +71,7 @@ student-helpdesk-react/
 │   │   ├── auth/                 # Sign-in, pending, and profile-loading screens
 │   │   ├── operator/             # Technician navigation, queue pages, dialogs, and ticket details
 │   │   ├── shared/               # Reusable layout pieces, cards, and modal
-│   │   ├── student/              # Student request form panel and ticket list
+│   │   ├── student/              # Student request form, ticket list, and full-page ticket details
 │   │   └── tickets/              # Ticket forms and conversations
 │   ├── data/
 │   │   └── demo-data.js           # Sample tickets, guides, and display palettes
@@ -94,7 +97,10 @@ student-helpdesk-react/
 │       ├── 003_student_request_identity.sql
 │       ├── 004_ticket_comments.sql
 │       ├── 005_daily_ticket_references.sql
-│       └── 006_technician_team_visibility.sql
+│       ├── 006_technician_team_visibility.sql
+│       ├── 007_directory_admin.sql
+│       ├── 008_knowledge_content.sql
+│       └── 009_student_updated_status.sql
 ├── index.html
 ├── package.json
 └── vite.config.js
