@@ -253,7 +253,7 @@ function TicketTable({
             >
               <td>
                 <b>{ticket.title}</b>
-                <small className="ticket-id">{ticket.id}</small>
+                <small className="ticket-id">{ticket.id}</small>{ticket.unreadCommentCount > 0 && <Badge ml="2" colorPalette="orange" variant="subtle" rounded="full">{ticket.unreadCommentCount} new {ticket.unreadCommentCount === 1 ? "reply" : "replies"}</Badge>}
               </td>
               <td>
                 {showAssignee ? (
