@@ -38,9 +38,10 @@ npm.cmd run dev
 - Optional read-only, cross-site ticket visibility for trusted technician accounts
 - Manual refresh and 30-second new-ticket checks with an in-app notification centre
 - In-app alerts and unread reply counts when students or technicians add ticket comments
-- Full-page technician ticket details with requester, issue, assignment, activity, and shared comments
+- Full-page technician ticket details with requester, issue, assignment, ticket history, internal notes, and shared comments
 - Multiple open technician tickets in tabs, with fixed navigation while viewing a ticket
-- Technician ticket editing with assignment checks and an activity record
+- Technician ticket editing with assignment checks and a field-by-field history timeline
+- Technician-only internal ticket notes, kept separate from the student conversation
 - Assign, mark in progress, wait for a student, resolve, and simulated escalation actions
 - Student replies update the ticket status and notify the assigned technician
 - Searchable knowledge base with common Wi-Fi, device, account, printing, and classroom guides
@@ -72,7 +73,7 @@ student-helpdesk-react/
 │   │   ├── operator/             # Technician navigation, queue pages, dialogs, and ticket details
 │   │   ├── shared/               # Reusable layout pieces, cards, and modal
 │   │   ├── student/              # Student request form, ticket list, and full-page ticket details
-│   │   └── tickets/              # Ticket forms and conversations
+│   │   └── tickets/              # Ticket forms, conversations, history, and technician notes
 │   ├── data/
 │   │   └── demo-data.js           # Sample tickets, guides, and display palettes
 │   ├── hooks/
@@ -101,7 +102,8 @@ student-helpdesk-react/
 │       ├── 007_directory_admin.sql
 │       ├── 008_knowledge_content.sql
 │       ├── 009_student_updated_status.sql
-│       └── 010_comment_read_receipts.sql
+│       ├── 010_comment_read_receipts.sql
+│       └── 011_internal_notes_and_ticket_history.sql
 ├── index.html
 ├── package.json
 └── vite.config.js
@@ -127,5 +129,8 @@ student-helpdesk-react/
 ## Local environment variables
 
 Copy `.env.example` to `.env.local` and add your Entra and Supabase settings. Values beginning with `VITE_` are included in browser code; use them only for public identifiers and the API scope. The Supabase secret key must stay in a server-only variable without the `VITE_` prefix. See [authentication](docs/AUTHENTICATION.md) and [Supabase setup](docs/SUPABASE_SETUP.md).
+
+
+
 
 
