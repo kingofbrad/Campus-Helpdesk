@@ -17,6 +17,7 @@
 13. Run `supabase/migrations/008_knowledge_content.sql` to create and seed the `knowledge_guides` and `student_guidance` tables used by the admin content editor.
 14. Run `supabase/migrations/009_student_updated_status.sql` so the ticket status constraint accepts `student_updated`, which the app sets when a student replies. Run all migrations in order for new and existing databases.
 15. Run `supabase/migrations/010_comment_read_receipts.sql` to add per-comment read timestamps. The API uses these to show unread reply counts in both ticket lists.
+16. Run `supabase/migrations/011_internal_notes_and_ticket_history.sql` to create technician-only internal notes and structured ticket history. It backfills existing `ticket_activity` records into the history table.
 
 The migration enables Row Level Security (RLS) on every table and intentionally adds no browser-access policies yet. That leaves the tables closed to the public Data API until the app's server API and access rules are configured. The site-matching foreign key also prevents assigning a ticket to a technician registered at another site.
 
@@ -111,7 +112,9 @@ Restart both after changing `.env.local`. Sign in again when prompted to grant t
 - `technicians`: each technician's Entra tenant ID and object ID, display name, site, and optional cross-site ticket viewing permission.
 - `ticket_daily_sequences`: one daily counter for generating user-facing ticket references.
 - `tickets`: requester details, optional Entra tenant and object ID, selected site, issue, status, priority, and assigned technician. Self-service tickets and Entra-selected walk-up tickets have a requester identity; manually entered walk-up tickets do not.
-- `ticket_activity`: ticket creation, notes, assignment, status changes, and escalation history.
+- `ticket_activity`: legacy activity records, copied into `ticket_history` by migration 011.
+- `ticket_history`: ticket creation, field edits, status changes, assignment, student replies, and note-added events, with actor and old/new values where applicable.
+- `ticket_internal_notes`: private technician notes, stored separately from student-visible comments.
 - `ticket_comments`: shared student and technician conversation messages, including a read timestamp for the other side. It does not support private notes.
 - `knowledge_guides`: published troubleshooting guides managed by the directory admin.
 - `student_guidance`: the student technician guidance content managed by the directory admin.
@@ -123,12 +126,14 @@ Restart both after changing `.env.local`. Sign in again when prompted to grant t
 - Keep the database password in a password manager. Never put it in a `VITE_` variable or commit it to Git.
 - Do not use a Supabase secret/service-role key in the React app. It bypasses RLS and belongs only in a server-side environment.
 - The API provides a Microsoft-authenticated student self-service submission route and a technician walk-up ticket form. Both route to the first active technician at the selected site. Students can view self-service tickets they submitted and walk-up tickets created from their selected Entra directory result; manually typed walk-up tickets are not linked to a student identity. Student access is matched by Entra tenant and object ID, not email. Technician ticket listing is limited to assignments unless `can_view_all_tickets` is explicitly enabled. Updates, status changes, and replies remain limited to tickets assigned to the technician. Escalation only records a demo escalation status; it does not contact TOPdesk or staff IT.
-- Students can open a submitted ticket as a full page and reply in its shared conversation. The assigned technician sees the same conversation on the ticket detail page. Comments are visible to both parties; there are no private technician notes in this demo. Existing projects must run migration `004_ticket_comments.sql` before comments will work, and migration `010_comment_read_receipts.sql` before unread reply counts will work.
+- Students can open a submitted ticket as a full page and reply in its shared conversation. The assigned technician sees the same conversation on the ticket detail page. Comments are visible to both parties. Technician-only notes use the separate `ticket_internal_notes` table and are available only through technician API routes; the student API does not return them. Run migration `011_internal_notes_and_ticket_history.sql` to enable internal notes and ticket history. Existing Supabase projects must run migration `004_ticket_comments.sql` before comments will work, and migration `010_comment_read_receipts.sql` before unread reply counts will work.
 - Student replies set the status to `student_updated`; run migration `009_student_updated_status.sql` before using this status on an existing database.
 - Knowledge guides and student guidance are stored in Supabase and can be edited by a technician with `can_manage_directory`. Run migration `008_knowledge_content.sql` to create these tables; migration `007_directory_admin.sql` sets the directory-management permission.
 - Use Node.js 20 or later, as listed in the project README.
 - Use fictional records only in this portfolio demo.
 
 Supabase's database security guide explains RLS and why exposed tables need deliberate grants and policies: <https://supabase.com/docs/guides/database/postgres/row-level-security>.
+
+
 
 
