@@ -37,7 +37,7 @@ npm.cmd run dev
 - Personal ticket queue showing only tickets assigned to the signed-in technician
 - Optional read-only, cross-site ticket visibility for trusted technician accounts
 - Manual refresh and 30-second new-ticket checks with an in-app notification centre
-- In-app alerts when students reply to assigned tickets
+- In-app alerts and unread reply counts when students or technicians add ticket comments
 - Full-page technician ticket details with requester, issue, assignment, activity, and shared comments
 - Multiple open technician tickets in tabs, with fixed navigation while viewing a ticket
 - Technician ticket editing with assignment checks and an activity record
@@ -100,7 +100,8 @@ student-helpdesk-react/
 │       ├── 006_technician_team_visibility.sql
 │       ├── 007_directory_admin.sql
 │       ├── 008_knowledge_content.sql
-│       └── 009_student_updated_status.sql
+│       ├── 009_student_updated_status.sql
+│       └── 010_comment_read_receipts.sql
 ├── index.html
 ├── package.json
 └── vite.config.js
@@ -126,4 +127,5 @@ student-helpdesk-react/
 ## Local environment variables
 
 Copy `.env.example` to `.env.local` and add your Entra and Supabase settings. Values beginning with `VITE_` are included in browser code; use them only for public identifiers and the API scope. The Supabase secret key must stay in a server-only variable without the `VITE_` prefix. See [authentication](docs/AUTHENTICATION.md) and [Supabase setup](docs/SUPABASE_SETUP.md).
+
 
