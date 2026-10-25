@@ -20,7 +20,7 @@ Technicians open `/operator` (the site root redirects there) and sign in with Mi
 
 Students can choose **My submitted tickets** to open `/student/requests`, a separate page listing requests linked to that Microsoft account, with a **Refresh list** button. Tickets are matched by Entra tenant and object ID, not by email address. Self-service tickets are linked automatically. A technician-created walk-up ticket is linked when the technician selects the student's Entra search result. Manually entered walk-up tickets are not linked and will not appear in a student's list. Run `supabase/migrations/003_student_request_identity.sql` before using this feature on an existing database. Tickets created before the identity columns were added do not have a submitter identity attached and will not appear in the student list unless linked separately.
 
-Select one of your tickets (or focus it and press Enter/Space) to open its full-page details. Ticket information appears on the left and the conversation on the right. The portal header and navigation stay visible, and the ticket details and comments scroll independently. Use **My submitted tickets** to return to the list. Tickets with unread helpdesk replies show a badge. Opening the ticket marks the replies as read. Students can read helpdesk comments and send replies there. The assigned technician sees and replies to the same conversation on the ticket page. Every comment is shared with both parties; the demo does not provide private notes. Existing Supabase projects must also run migration `004_ticket_comments.sql` to create the comments table.
+Select one of your tickets (or focus it and press Enter/Space) to open its full-page details. Ticket information appears on the left and the conversation on the right. The portal header and navigation stay visible, and the ticket details and comments scroll independently. Use **My submitted tickets** to return to the list. Tickets with unread helpdesk replies show a badge. Opening the ticket marks the replies as read. Students can read helpdesk comments and send replies there. The assigned technician sees and replies to the same conversation on the ticket page. Every comment is shared with both parties. Technician-only notes are available from the technician ticket page and never appear in the student portal. Existing Supabase projects must also run migration `004_ticket_comments.sql` to create the comments table.
 
 The technician sign-in page links to the portal. Students need the existing Microsoft sign-in and delegated helpdesk API scope configured. The API validates the Entra token; students do not need a row in the `technicians` table.
 
@@ -32,7 +32,11 @@ Directory search requires the technician app registration to have Microsoft Grap
 
 ## Working a ticket
 
-Open a ticket to review the request, requester, category, priority, assignment, and activity notes. Its full-page view keeps ticket information on the left and the shared conversation on the right. Choose **Edit ticket** to correct the student name or email, issue title or description, category, or priority. The ticket site and technician assignment remain unchanged, and the update is recorded in the activity timeline. Available actions are:
+Open a ticket to review the request, requester, category, priority, assignment, history, and shared conversation. Its full-page view keeps ticket information on the left and comments in the middle. Choose **Edit ticket** to correct the student name or email, issue title or description, category, or priority. The ticket site and technician assignment remain unchanged. Each changed field is recorded with its old and new value in **Ticket history**, along with ticket creation, status changes, and student replies.
+
+Choose **Internal notes** at the bottom of the ticket to open a third pane on the right while keeping the details and conversation visible. Add technician-only context there for future troubleshooting. Internal notes are separate from comments and are not returned to the student portal. Technicians with cross-site read access can view notes; only the assigned technician can add them.
+
+Available actions are:
 
 - **Mark in progress** updates the assigned ticket's status. The sidebar profile and queue greeting use the signed-in Microsoft profile name.
 - **Waiting for student** marks the ticket as awaiting a student response. A reply changes it to **Updated by student** and triggers an in-app notification for the technician.
@@ -56,13 +60,17 @@ Use fictional records only. In Supabase mode, ticket records are persisted; in s
 ## Current limitations
 
 - No Microsoft Forms ingestion
-- No email or push notifications, private notes, or file uploads; notifications are in-app only
+- No email or push notifications or file uploads; notifications are in-app only
 - No connection to TOPdesk or school support systems
 - No production staff approval workflow or operational audit process
 - The weekly resolution figure is illustrative
 
 The local API limits ticket listing to the signed-in technician's assignment unless the technician's `can_view_all_tickets` permission is enabled. Ticket updates and replies remain assignment-limited. Site routing selects the first active technician registered at the chosen site. A production design should review routing fairness, audit requirements, data retention, role assignments, and privacy with the organisation's security and system development teams.
 
-Other proposal and future-development topics include Forms ingestion, external notifications, uploads, staff approval, and audit history.
+Other proposal and future-development topics include Forms ingestion, external notifications, uploads, and staff approval.
+
+
+
+
 
 
