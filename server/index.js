@@ -526,6 +526,7 @@ export async function handleRequest(req, res) {
       const { action } = await readBody(req);
       const actionMap = {
         progress: ["in_progress", "Status changed to In progress."],
+        waiting: ["waiting_for_student", "Status changed to Waiting for student."],
         resolve: ["resolved", `Marked resolved by ${technician.display_name}.`],
         escalate: ["escalated", "Escalation handover preview marked ready for on-site support."],
       };
@@ -552,4 +553,5 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
 }
 
 export default handleRequest;
+
 
