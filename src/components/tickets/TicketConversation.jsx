@@ -44,7 +44,7 @@ export default function TicketConversation({ ticket, audience, readOnly = false,
     {inline ? (
       <div className="conversation-inline-head">
         <div className="eyebrow">Ticket conversation</div>
-        <Heading size="md" mt="1">Comments with the student</Heading>
+        <Heading size="md" mt="1">{audience === "student" ? "Conversation with the helpdesk" : "Comments with the student"}</Heading>
       </div>
     ) : (
       <div className="modal-head">
@@ -52,7 +52,7 @@ export default function TicketConversation({ ticket, audience, readOnly = false,
         <button className="icon-button" type="button" onClick={onClose} aria-label="Close comments"><LuX /></button>
       </div>
     )}
-    <div className="conversation-summary">Comments are visible to the student and the assigned helpdesk technician.</div>
+    <div className="conversation-summary">{audience === "student" ? "Replies from you and the student helpdesk are visible in this conversation." : "Comments are visible to the student and the assigned helpdesk technician."}</div>
     <div className="conversation-list" aria-live="polite">
       {loading ? <div className="conversation-empty">Loading comments…</div>
         : comments.length === 0 ? <div className="conversation-empty"><LuMessageSquare size={22} /><b>No comments yet</b><span>Send a message to start the conversation.</span></div>
@@ -68,7 +68,7 @@ export default function TicketConversation({ ticket, audience, readOnly = false,
       <div className="notice">You can review this conversation. Only the assigned technician can reply.</div>
     ) : (
       <form className="comment-form" onSubmit={submit}>
-        <label htmlFor={inline ? "technician-ticket-comment" : "ticket-comment"}>{audience === "student" ? "Reply to the helpdesk" : "Add a comment for the student"}</label>
+        <label htmlFor={inline ? "inline-ticket-comment" : "ticket-comment"}>{audience === "student" ? "Reply to the helpdesk" : "Add a comment for the student"}</label>
         <textarea id={inline ? "technician-ticket-comment" : "ticket-comment"} maxLength={5000} rows={3} value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Write a comment…" required />
         <div className="comment-form-foot">
           <small>Comments are shared with the student and assigned technician.</small>
