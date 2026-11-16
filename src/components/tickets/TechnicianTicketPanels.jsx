@@ -109,10 +109,9 @@ export function InternalNotesPanel({ ticket, technicianName, canManage }) {
         <form className="internal-note-form" onSubmit={submit}>
           <label htmlFor="ticket-internal-note">Add an internal note</label>
           <textarea id="ticket-internal-note" maxLength={5000} rows={4} value={note} onChange={(event) => setNote(event.target.value)} placeholder="Record useful context for the next technician…" required />
-          <Button type="submit" size="sm" colorPalette="ekc" disabled={saving || !note.trim()}><LuSend /> {saving ? "Saving…" : "Add note"}</Button>
+          <Button type="submit" size="sm" colorPalette="brand" disabled={saving || !note.trim()}><LuSend /> {saving ? "Saving…" : "Add note"}</Button>
         </form>
       ) : <div className="notice">You can view these notes, but only the assigned technician can add one.</div>}
     </aside>
   );
 }
-

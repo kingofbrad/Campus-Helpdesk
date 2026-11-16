@@ -60,7 +60,6 @@ export default function TicketForm({ initialValues = {}, submitLabel, showPriori
       {showPriority && <label className="form-field"><span>Initial priority</span><select value={values.priority} onChange={change("priority")}><option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option></select></label>}
     </div>
     {error && <div className="signin-error" role="alert">{error}</div>}
-    <div className="form-actions">{onCancel && <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>}<Button type="submit" colorPalette="ekc" disabled={busy || !!siteError || !sites.length}>{busy ? "Submitting…" : submitLabel}</Button></div>
+    <div className="form-actions">{onCancel && <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>}<Button type="submit" colorPalette="brand" disabled={busy || !!siteError || !sites.length}>{busy ? "Submitting…" : submitLabel}</Button></div>
   </form>;
 }
-

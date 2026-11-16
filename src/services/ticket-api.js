@@ -130,7 +130,7 @@ export async function getStudentTickets(instance, account) {
 }
 
 export async function getSites() {
-  if (!databaseMode) return [{ code: "sheppey", name: "Sheppey" }, { code: "canterbury", name: "Canterbury" }];
+  if (!databaseMode) return [{ code: "north_campus", name: "North Campus" }, { code: "riverside_campus", name: "Riverside Campus" }];
   const response = await fetch("/api/sites");
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || `Helpdesk API returned ${response.status}.`);
@@ -253,7 +253,6 @@ export async function updateTicket(instance, account, ticket, action) {
     body: JSON.stringify({ action }),
   });
 }
-
 
 
 

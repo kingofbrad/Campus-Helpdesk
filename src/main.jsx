@@ -47,4 +47,3 @@ startApplication().catch((error) => {
   console.error("Could not initialize Microsoft sign-in.", error);
   document.getElementById("root").textContent = "Microsoft sign-in could not be initialized. Please refresh the page or contact the demo owner.";
 });
-

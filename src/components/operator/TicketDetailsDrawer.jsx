@@ -4,6 +4,8 @@ import { LuArrowUpRight, LuLockKeyhole } from "react-icons/lu";
 import TicketConversation from "../tickets/TicketConversation.jsx";
 import { InternalNotesPanel, TicketHistory } from "../tickets/TechnicianTicketPanels.jsx";
 import { priorityColors, statusColors } from "../../data/demo-data.js";
+import { showcase } from "../../config/auth-config.js";
+import { PortfolioConversation } from "../tickets/TicketConversation.jsx";
 
 export default function TicketDetailsDrawer({ ticket, technicianName, displayAssignee, databaseMode, canManage, onEdit, onAction, onEscalate }) {
   const [notesOpen, setNotesOpen] = useState(false);
@@ -19,7 +21,7 @@ export default function TicketDetailsDrawer({ ticket, technicianName, displayAss
           <Badge colorPalette={priorityColors[ticket.priority]} variant="subtle" rounded="full">{ticket.priority} priority</Badge>
         </div>
       </header>
-      <div className={`ticket-full-page-body ${databaseMode ? "" : "single-column"} ${notesOpen ? "ticket-with-notes" : ""}`}>
+      <div className={`ticket-full-page-body ${databaseMode || showcase ? "" : "single-column"} ${notesOpen ? "ticket-with-notes" : ""}`}>
         <div className="ticket-full-page-main">
           <Heading size="xl" mb="2">{ticket.title}</Heading>
           <Text fontSize="sm" color="gray.600">Submitted by {ticket.student} · {ticket.updated}</Text>
@@ -42,21 +44,22 @@ export default function TicketDetailsDrawer({ ticket, technicianName, displayAss
           )}
         </div>
         {databaseMode && <TicketConversation ticket={ticket} audience="technician" readOnly={!canManage} inline />}
+        {showcase && <PortfolioConversation ticket={ticket} audience="technician" />}
         {databaseMode && notesOpen && <InternalNotesPanel ticket={ticket} technicianName={technicianName} canManage={canManage} />}
+        {showcase && notesOpen && <aside className="internal-notes-panel" aria-label="Example internal technician notes"><div className="ticket-panel-heading"><LuLockKeyhole /><div><Heading size="sm">Internal notes</Heading><small>Visible to technicians only</small></div></div><div className="internal-note-list"><article className="internal-note-card"><p>The slowdown began after a recent system update. Ask for the device model and operating system version, and confirm the student has saved their work before suggesting a restart.</p><small>Alex Morgan · Today, 10:20</small></article></div><form className="internal-note-form"><label htmlFor="showcase-note">Add an internal note</label><textarea id="showcase-note" rows={4} placeholder="Record useful context for the next technician…" /><Button type="button" size="sm" colorPalette="brand" disabled><LuLockKeyhole /> Sample only</Button></form></aside>}
       </div>
       <div className="ticket-actions ticket-full-page-actions">
-        {databaseMode && <Button size="sm" variant={notesOpen ? "subtle" : "outline"} onClick={() => setNotesOpen((open) => !open)}><LuLockKeyhole /> {notesOpen ? "Hide internal notes" : "Internal notes"}</Button>}
+        {(databaseMode || showcase) && <Button size="sm" variant={notesOpen ? "subtle" : "outline"} onClick={() => setNotesOpen((open) => !open)}><LuLockKeyhole /> {notesOpen ? "Hide internal notes" : "Internal notes"}</Button>}
         {canManage && <>
           <Button size="sm" variant="outline" onClick={onEdit}>Edit ticket</Button>
           <Button size="sm" variant="outline" onClick={() => onAction("progress")}>Mark in progress</Button>
           <Button size="sm" variant="outline" onClick={() => onAction("waiting")}>Waiting for student</Button>
           <Button size="sm" variant="outline" onClick={() => onAction("resolve")}>Resolve</Button>
-          <Button size="sm" colorPalette="ekc" onClick={onEscalate}><LuArrowUpRight /> Escalate to IT</Button>
+          <Button size="sm" colorPalette="brand" onClick={onEscalate}><LuArrowUpRight /> Escalate to IT</Button>
         </>}
         {!canManage && <small className="detail-readonly-note">You can view this ticket, but only its assigned technician can update it.</small>}
       </div>
     </section>
   );
 }
-
 

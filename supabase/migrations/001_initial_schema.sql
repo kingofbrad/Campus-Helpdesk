@@ -1,4 +1,4 @@
--- Campus Helpdesk demo schema.
+-- Campus Support Desk demo schema.
 -- Run this in Supabase SQL Editor. These tables intentionally have RLS enabled
 -- and no client access policies yet; connect the server API before exposing data.
 
@@ -128,6 +128,6 @@ alter table public.ticket_comments enable row level security;
 alter table public.ticket_daily_sequences enable row level security;
 
 insert into public.sites (code, name)
-values ('sheppey', 'Sheppey'), ('canterbury', 'Canterbury')
+values ('north_campus', 'North Campus'), ('riverside_campus', 'Riverside Campus')
 on conflict (code) do update set name = excluded.name;
 

@@ -11,7 +11,7 @@ export function GuideDialog({ guide, onClose }) {
       <div className="detail-label">Suggested checks</div>
       <ol className="steps">{guide.steps.map((step) => <li key={step}>{step}</li>)}</ol>
       <div className="notice">Follow school guidance and stay within your training. If in doubt, ask a staff member.</div>
-      <div className="modal-actions"><Button colorPalette="ekc" onClick={onClose}>Done</Button></div>
+      <div className="modal-actions"><Button colorPalette="brand" onClick={onClose}>Done</Button></div>
     </Modal>
   );
 }
@@ -48,10 +48,10 @@ export function EscalationDialog({ ticket, onClose, onConfirm }) {
         <PreviewField label="What has been tried" value={ticket.notes.join(" ")} />
         <PreviewField label="Student contact" value={`${ticket.student} · ${ticket.email}`} />
       </div>
-      <div className="notice">Demo only — this does not create a TOPdesk ticket or send information anywhere.</div>
+      <div className="notice">Demo only — this does not create a external IT service ticket or send information anywhere.</div>
       <div className="modal-actions">
         <Button variant="outline" onClick={onClose}>Cancel</Button>
-        <Button colorPalette="ekc" onClick={onConfirm}>Mark escalated in demo</Button>
+        <Button colorPalette="brand" onClick={onConfirm}>Mark escalated in demo</Button>
       </div>
     </Modal>
   );
@@ -60,5 +60,4 @@ export function EscalationDialog({ ticket, onClose, onConfirm }) {
 function PreviewField({ label, value }) {
   return <div className="preview-field"><small>{label}</small><b>{value}</b></div>;
 }
-
 

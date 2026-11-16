@@ -27,14 +27,10 @@ export default function OperatorSidebar({
   return (
     <aside className="sidebar">
       <div className="brand">
-        <img
-          className="ekc-logo ekc-logo-sidebar"
-          src="/assets/EKC_Group_Footer.svg"
-          alt="EKC Group — East Kent Colleges Group"
-        />
+        <span className="brand-mark sidebar-brand-mark" aria-hidden="true">C</span>
         <div>
-          <b>Student Helpdesk</b>
-          <small>Student Support Desk</small>
+          <b>Campus Support Desk</b>
+          <small>Student Services Demo</small>
         </div>
       </div>
       <div className="nav-label">Workspace</div>

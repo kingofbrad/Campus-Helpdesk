@@ -66,4 +66,3 @@ function EmptyState({ children, icon = false }) {
   return <div className="student-list-empty">{icon && <LuInbox size={22} />}{children}</div>;
 }
 
-

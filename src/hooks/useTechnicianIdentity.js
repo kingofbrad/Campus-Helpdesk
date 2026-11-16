@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { EventType, InteractionRequiredAuthError } from "@azure/msal-browser";
 import { useMsal } from "@azure/msal-react";
+import { portfolioShowcase, showcaseTechnician } from "../config/showcase.js";
 
 export default function useTechnicianIdentity() {
   const { instance, accounts, inProgress } = useMsal();
   const [authError, setAuthError] = useState("");
   const [profileName, setProfileName] = useState("");
   const [profileLoading, setProfileLoading] = useState(true);
-  const activeAccount = instance.getActiveAccount() ?? accounts[0];
+  const activeAccount = portfolioShowcase ? showcaseTechnician : instance.getActiveAccount() ?? accounts[0];
 
   useEffect(() => {
     const callbackId = instance.addEventCallback((event) => {
@@ -28,6 +29,11 @@ export default function useTechnicianIdentity() {
 
   useEffect(() => {
     let cancelled = false;
+    if (portfolioShowcase) {
+      setProfileName(showcaseTechnician.name);
+      setProfileLoading(false);
+      return () => { cancelled = true; };
+    }
     if (!activeAccount) {
       setProfileName("");
       setProfileLoading(false);

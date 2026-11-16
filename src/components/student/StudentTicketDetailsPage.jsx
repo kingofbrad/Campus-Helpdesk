@@ -1,7 +1,8 @@
 import { Badge, Button, Heading, Text } from "@chakra-ui/react";
 import { LuArrowLeft } from "react-icons/lu";
 import { priorityColors, statusColors } from "../../data/demo-data.js";
-import TicketConversation from "../tickets/TicketConversation.jsx";
+import TicketConversation, { PortfolioConversation } from "../tickets/TicketConversation.jsx";
+import { showcase } from "../../config/auth-config.js";
 
 export default function StudentTicketDetailsPage({ ticket, onBack }) {
   return (
@@ -12,7 +13,7 @@ export default function StudentTicketDetailsPage({ ticket, onBack }) {
           <div><div className="eyebrow">Your submitted ticket</div><small>{ticket.id}</small></div>
         </div>
         <div className="badge-row">
-          <Badge colorPalette={statusColors[ticket.status] || "blue"} variant="subtle" rounded="full">{ticket.status}</Badge>
+          <Badge colorPalette={statusColors[ticket.status]} variant="subtle" rounded="full">{ticket.status}</Badge>
           <Badge colorPalette={priorityColors[ticket.priority]} variant="subtle" rounded="full">{ticket.priority} priority</Badge>
         </div>
       </header>
@@ -30,7 +31,7 @@ export default function StudentTicketDetailsPage({ ticket, onBack }) {
           <div className="detail-label">Issue description</div>
           <div className="description">{ticket.description}</div>
         </div>
-        <TicketConversation ticket={ticket} audience="student" inline />
+        {showcase ? <PortfolioConversation ticket={ticket} audience="student" /> : <TicketConversation ticket={ticket} audience="student" inline />}
       </div>
     </section>
   );

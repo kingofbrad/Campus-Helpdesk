@@ -2,6 +2,8 @@ import { Button } from "@chakra-ui/react";
 import { useMsal } from "@azure/msal-react";
 import { LuLogOut, LuRefreshCw } from "react-icons/lu";
 import NotificationCentre from "./NotificationCentre.jsx";
+import { showcase } from "../../config/auth-config.js";
+import { showcaseTechnician } from "../../config/showcase.js";
 
 export default function OperatorHeader({
   title,
@@ -17,8 +19,9 @@ export default function OperatorHeader({
   onSelectNotification,
 }) {
   const { instance, accounts } = useMsal();
-  const account = instance.getActiveAccount() ?? accounts[0];
+  const account = showcase ? showcaseTechnician : instance.getActiveAccount() ?? accounts[0];
   const signOut = () => {
+    if (showcase) return;
     sessionStorage.setItem("campus-helpdesk-return-path", "/operator");
     return instance.logoutRedirect({ account });
   };
@@ -27,7 +30,7 @@ export default function OperatorHeader({
     <header className="topbar">
       <div className="breadcrumb">Student Support <span>/</span><b>{title}</b></div>
       <div className="top-right">
-        <span className="demo-tag">● Personal queue · Demo</span>
+        <span className="demo-tag">● Portfolio preview · Sample data</span>
         {databaseMode && (
           <>
             <Button className="refresh-button" size="sm" variant="outline" onClick={onRefresh} disabled={refreshing || ticketLoading}>
@@ -45,7 +48,7 @@ export default function OperatorHeader({
         )}
         <div className="account-controls">
           <span className="account-name">{account.name || account.username}</span>
-          <Button size="sm" variant="outline" onClick={signOut}><LuLogOut /> Sign out</Button>
+          {!showcase && <Button size="sm" variant="outline" onClick={signOut}><LuLogOut /> Sign out</Button>}
         </div>
       </div>
     </header>

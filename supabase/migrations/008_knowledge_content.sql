@@ -42,4 +42,3 @@ revoke all on public.knowledge_guides from anon, authenticated;
 revoke all on public.student_guidance from anon, authenticated;
 grant select, insert, update, delete on public.knowledge_guides to service_role;
 grant select, insert, update, delete on public.student_guidance to service_role;
-

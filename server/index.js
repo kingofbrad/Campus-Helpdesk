@@ -730,11 +730,10 @@ export async function handleRequest(req, res) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  createServer(handleRequest).listen(port, () => console.log(`Campus Helpdesk listening on port ${port}`));
+  createServer(handleRequest).listen(port, () => console.log(`Campus Support Desk listening on port ${port}`));
 }
 
 export default handleRequest;
-
 
 
 

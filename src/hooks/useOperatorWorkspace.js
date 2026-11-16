@@ -20,6 +20,7 @@ import {
   technicianIdFor,
   technicianInitials,
 } from "../utils/helpdesk.js";
+import { showcase } from "../config/auth-config.js";
 
 export default function useOperatorWorkspace({ instance, activeAccount, technicianName }) {
   const [tickets, setTickets] = useState(() => databaseMode ? [] : initialTicketsFor(activeAccount));
@@ -29,7 +30,11 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
   const [content, setContent] = useState(null);
   const [contentError, setContentError] = useState("");
   const [contentEditor, setContentEditor] = useState(null);
-  const [page, setPage] = useState("queue");
+  const [page, setPage] = useState(() => {
+    if (!showcase) return "queue";
+    const requestedPage = new URLSearchParams(window.location.search).get("page");
+    return ["knowledge", "mine", "guidance"].includes(requestedPage) ? requestedPage : "queue";
+  });
   const [selected, setSelected] = useState(null);
   const [ticketTabs, setTicketTabs] = useState([]);
   const [activeTicketTabId, setActiveTicketTabId] = useState(null);
@@ -306,7 +311,7 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
       student: requesterName,
       initials: technicianInitials(requesterName),
       email: values.requester_email,
-      site: values.site_code === "sheppey" ? "Sheppey" : "Canterbury",
+      site: values.site_code === "north_campus" ? "North Campus" : "Riverside Campus",
       category: values.category,
       priority: values.priority === "high" ? "High" : values.priority === "low" ? "Low" : "Normal",
       status: "New",
@@ -344,6 +349,16 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     setContentEditor(null); notify("Student guidance saved for all technicians.");
   };
   const ticketTabKey = (ticket) => String(ticket?.databaseId || ticket?.id || "");
+  useEffect(() => {
+    if (!showcase || !tickets.length || selected) return;
+    const requestedTicket = new URLSearchParams(window.location.search).get("ticket");
+    const ticket = tickets.find((item) => item.id === requestedTicket);
+    if (!ticket) return;
+    const openedTicket = { ...ticket, unreadCommentCount: 0, latestUnreadCommentAt: null };
+    setSelected(openedTicket);
+    setTicketTabs([{ id: ticketTabKey(ticket), ticket: openedTicket }]);
+    setActiveTicketTabId(ticketTabKey(ticket));
+  }, [tickets, selected]);
   const openTicket = (ticket) => {
     if (!ticket) return;
     const id = ticketTabKey(ticket);
@@ -457,7 +472,6 @@ export default function useOperatorWorkspace({ instance, activeAccount, technici
     setCreateOpen,
   };
 }
-
 
 
 

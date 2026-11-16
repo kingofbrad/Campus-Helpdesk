@@ -1,10 +1,13 @@
 import { LogLevel } from "@azure/msal-browser";
 
+// Keep this public portfolio build permanently in fictional-data showcase mode.
+const showcase = true;
+
 export const msalConfig = {
   auth: {
-    clientId: import.meta.env.VITE_ENTRA_CLIENT_ID,
-    authority: import.meta.env.VITE_ENTRA_AUTHORITY,
-    redirectUri: import.meta.env.VITE_ENTRA_REDIRECT_URI,
+    clientId: "00000000-0000-0000-0000-000000000000",
+    authority: "https://login.microsoftonline.com/common/",
+    redirectUri: window.location.origin,
   },
   cache: {
     cacheLocation: "sessionStorage",
@@ -23,7 +26,9 @@ export const msalConfig = {
   },
 };
 
-export const apiScopes = import.meta.env.VITE_ENTRA_API_SCOPE
+export const apiScopes = !showcase && import.meta.env.VITE_ENTRA_API_SCOPE
   ? [import.meta.env.VITE_ENTRA_API_SCOPE]
   : [];
+
+export { showcase };
 

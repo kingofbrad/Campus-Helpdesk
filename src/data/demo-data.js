@@ -9,27 +9,27 @@ import {
 
 export const sampleTickets = [
   {
-    id: "26-10-24-0001",
+    id: "26-11-14-0001",
     title: "Unable to connect to eduroam in the library",
     student: "Amira Khan",
     initials: "AK",
     email: "amira.khan@example.edu",
-    site: "Sheppey",
+    site: "North Campus",
     category: "Wi-Fi & network",
     priority: "High",
     status: "New",
-    assignee: "Unassigned",
+    assignee: "Jordan Lee",
     updated: "8 min ago",
     description: "I can see eduroam in the Wi-Fi list, but it keeps asking me to sign in again. I have a lecture in 20 minutes and I am in the library.",
     notes: ["Request submitted through the student help form."],
   },
   {
-    id: "26-10-24-0002",
+    id: "26-11-14-0002",
     title: "Laptop running very slowly after update",
     student: "Leo Martin",
     initials: "LM",
     email: "leo.martin@example.edu",
-    site: "Sheppey",
+    site: "North Campus",
     category: "Device support",
     priority: "Normal",
     status: "In progress",
@@ -39,12 +39,12 @@ export const sampleTickets = [
     notes: ["Asked which operating system and when the slowdown began."],
   },
   {
-    id: "26-10-24-0003",
+    id: "26-11-14-0003",
     title: "Cannot access course materials in the VLE",
     student: "Priya Shah",
     initials: "PS",
     email: "priya.shah@example.edu",
-    site: "Canterbury",
+    site: "Riverside Campus",
     category: "Accounts & access",
     priority: "High",
     status: "Waiting for student",
@@ -54,12 +54,12 @@ export const sampleTickets = [
     notes: ["Asked for the module code and a screenshot with personal details hidden."],
   },
   {
-    id: "26-10-24-0004",
+    id: "26-11-14-0004",
     title: "Printing credit not showing in account",
     student: "Noah Brown",
     initials: "NB",
     email: "noah.brown@example.edu",
-    site: "Canterbury",
+    site: "Riverside Campus",
     category: "Printing",
     priority: "Normal",
     status: "New",
@@ -69,12 +69,12 @@ export const sampleTickets = [
     notes: ["Request submitted through the student help form."],
   },
   {
-    id: "26-10-24-0005",
+    id: "26-11-14-0005",
     title: "Need help setting up campus email on phone",
     student: "Ella Wilson",
     initials: "EW",
     email: "ella.wilson@example.edu",
-    site: "Sheppey",
+    site: "North Campus",
     category: "Accounts & access",
     priority: "Low",
     status: "In progress",
@@ -84,12 +84,12 @@ export const sampleTickets = [
     notes: ["Shared the approved mobile email setup guide."],
   },
   {
-    id: "26-10-24-0006",
+    id: "26-11-14-0006",
     title: "Projector has no sound in study room",
     student: "Jack Taylor",
     initials: "JT",
     email: "jack.taylor@example.edu",
-    site: "Canterbury",
+    site: "Riverside Campus",
     category: "Classroom equipment",
     priority: "Normal",
     status: "New",
@@ -99,12 +99,12 @@ export const sampleTickets = [
     notes: ["Request submitted through the student help form."],
   },
   {
-    id: "26-10-24-0007",
+    id: "26-11-14-0007",
     title: "Browser keeps signing me out of library site",
     student: "Maya Patel",
     initials: "MP",
     email: "maya.patel@example.edu",
-    site: "Sheppey",
+    site: "North Campus",
     category: "Accounts & access",
     priority: "Low",
     status: "Resolved",
@@ -114,12 +114,12 @@ export const sampleTickets = [
     notes: ["Cleared site cookies and tested a fresh sign-in. Student confirmed it worked."],
   },
   {
-    id: "26-10-24-0008",
+    id: "26-11-14-0008",
     title: "External monitor not detected",
     student: "Oliver Green",
     initials: "OG",
     email: "oliver.green@example.edu",
-    site: "Canterbury",
+    site: "Riverside Campus",
     category: "Device support",
     priority: "Normal",
     status: "Escalated",
@@ -176,7 +176,7 @@ export const knowledgeGuides = [
 ];
 
 export const statusColors = {
-  New: "ekc",
+  New: "brand",
   "In progress": "orange",
   "Waiting for student": "purple",
   "Updated by student": "orange",
@@ -184,7 +184,6 @@ export const statusColors = {
   Escalated: "purple",
 };
 
-export const priorityColors = { High: "red", Normal: "gray", Low: "ekc" };
-
+export const priorityColors = { High: "red", Normal: "gray", Low: "brand" };
 
 

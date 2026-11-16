@@ -32,7 +32,7 @@ function GuideEditor({ guide, onClose, onSave, onDelete }) {
         <div className="form-field span-two"><span>Steps</span>{values.steps.map((step, index) => <div className="content-step-row" key={index}><Input required maxLength={500} value={step} onChange={(event) => setValues((current) => ({ ...current, steps: current.steps.map((item, i) => i === index ? event.target.value : item) }))} placeholder={`Step ${index + 1}`} />{values.steps.length > 1 && <Button type="button" variant="outline" onClick={() => setValues((current) => ({ ...current, steps: current.steps.filter((_, i) => i !== index) }))}>Remove</Button>}</div>)}<Button mt="2" type="button" variant="outline" onClick={() => setValues((current) => ({ ...current, steps: [...current.steps, ""] }))}>Add step</Button></div>
       </div>
       {error && <div className="signin-error" role="alert">{error}</div>}
-      <div className="form-actions">{guide && <Button type="button" colorPalette="red" variant="outline" disabled={busy} onClick={async () => { if (!window.confirm("Delete this knowledge guide? This removes it for every technician.")) return; setBusy(true); try { await onDelete(guide); } catch (cause) { setError(cause.message); setBusy(false); } }}>Delete guide</Button>}<Button type="button" variant="outline" disabled={busy} onClick={onClose}>Cancel</Button><Button type="submit" colorPalette="ekc" disabled={busy}>{busy ? "Saving…" : "Save guide"}</Button></div>
+      <div className="form-actions">{guide && <Button type="button" colorPalette="red" variant="outline" disabled={busy} onClick={async () => { if (!window.confirm("Delete this knowledge guide? This removes it for every technician.")) return; setBusy(true); try { await onDelete(guide); } catch (cause) { setError(cause.message); setBusy(false); } }}>Delete guide</Button>}<Button type="button" variant="outline" disabled={busy} onClick={onClose}>Cancel</Button><Button type="submit" colorPalette="brand" disabled={busy}>{busy ? "Saving…" : "Save guide"}</Button></div>
     </form>
   </Modal>;
 }
@@ -57,9 +57,8 @@ function GuidanceEditor({ guidance, onClose, onSave }) {
         {values.items.length < 12 && <Button type="button" variant="outline" onClick={() => setValues((current) => ({ ...current, items: [...current.items, { heading: "", text: "" }] }))}>Add guidance point</Button>}
       </div>
       {error && <div className="signin-error" role="alert">{error}</div>}
-      <div className="form-actions"><Button type="button" variant="outline" disabled={busy} onClick={onClose}>Cancel</Button><Button type="submit" colorPalette="ekc" disabled={busy}>{busy ? "Saving…" : "Save guidance"}</Button></div>
+      <div className="form-actions"><Button type="button" variant="outline" disabled={busy} onClick={onClose}>Cancel</Button><Button type="submit" colorPalette="brand" disabled={busy}>{busy ? "Saving…" : "Save guidance"}</Button></div>
     </form>
   </Modal>;
 }
-
 

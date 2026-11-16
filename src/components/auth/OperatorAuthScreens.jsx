@@ -21,12 +21,12 @@ export function OperatorSignInPage({ authError = "" }) {
         <div className="eyebrow">Student technician workspace</div>
         <Heading size="xl" mt="2" mb="2">Sign in to continue</Heading>
         <Text color="gray.600" lineHeight="1.65">Use your Microsoft account to access the student helpdesk demo.</Text>
-        <Button className="signin-button" colorPalette="ekc" size="lg" onClick={signIn}><LuLogIn /> Sign in with Microsoft</Button>
+        <Button className="signin-button" colorPalette="brand" size="lg" onClick={signIn}><LuLogIn /> Sign in with Microsoft</Button>
         {(error || authError) && <div className="signin-error" role="alert">{error || authError}</div>}
         <div className="signin-foot"><LuShieldCheck /><span>Sign-in is handled by Microsoft. Ticket access is limited to your assigned queue.</span></div>
       </section>
       <div className="portal-link"><a href="/student">Need help? Submit a student request</a></div>
-      <div className="signin-caption">Campus Helpdesk · Demo environment</div>
+      <div className="signin-caption">Portfolio preview · Sample data only</div>
     </main>
   );
 }
@@ -53,7 +53,7 @@ function AuthStatusPage({ eyebrow, title, message }) {
         <Heading size="xl" mt="2" mb="2">{title}</Heading>
         <Text color="gray.600" lineHeight="1.65">{message}</Text>
       </section>
-      <div className="signin-caption">Campus Helpdesk · Demo environment</div>
+      <div className="signin-caption">Portfolio preview · Sample data only</div>
     </main>
   );
 }
@@ -61,10 +61,9 @@ function AuthStatusPage({ eyebrow, title, message }) {
 function Brand() {
   return (
     <div className="signin-brand">
-      <img className="ekc-logo ekc-logo-auth" src="/assets/ekc-group-logo.png" alt="EKC Group — East Kent Colleges Group" />
-      <div><b>Student Helpdesk</b><small>Student Support Desk</small></div>
+      <span className="brand-mark auth-brand-mark" aria-hidden="true">C</span>
+      <div><b>Campus Support Desk</b><small>Student Services Demo</small></div>
     </div>
   );
 }
-
 

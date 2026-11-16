@@ -48,7 +48,7 @@ export function TicketQueuePage({
             : "Work on requests assigned to your signed-in account, and escalate when needed."
         }
       >
-        <Button colorPalette="ekc" onClick={onCreateTicket}>
+        <Button colorPalette="brand" onClick={onCreateTicket}>
           <LuPlus /> Create ticket for student
         </Button>
       </PageHeading>
@@ -103,7 +103,7 @@ export function TicketQueuePage({
                 : `Only requests assigned to ${technicianName} are shown.`}
             </small>
           </div>
-          <Badge colorPalette="ekc" variant="subtle" rounded="full">
+          <Badge colorPalette="brand" variant="subtle" rounded="full">
             {canViewAllTickets
               ? `${queueTickets.length} tickets`
               : `${queueTickets.length} assigned`}
@@ -200,7 +200,7 @@ export function KnowledgeBasePage({ query, onQueryChange, onOpenGuide, guides, c
   return <>
     {contentError && <div className="notice" role="alert">{contentError}</div>}
     <PageHeading eyebrow="Student technician resources" title="Knowledge base" subtitle="Quick guides for common campus IT issues.">
-      {canManageContent && <Button colorPalette="ekc" onClick={onAddGuide}><LuPlus /> Add guide</Button>}
+      {canManageContent && <Button colorPalette="brand" onClick={onAddGuide}><LuPlus /> Add guide</Button>}
     </PageHeading>
     <div className="guide-filter"><div className="search-box"><LuSearch /><Input value={query} onChange={(event) => onQueryChange(event.target.value)} placeholder="Search troubleshooting guides…" size="sm" /></div><small>Guidance for student technicians</small></div>
     <div className="guide-grid">{matchingGuides.map((guide) => {
@@ -220,7 +220,7 @@ export function StudentGuidancePage({ guidance, canManageContent, onEdit, conten
   return <>
     {contentError && <div className="notice" role="alert">{contentError}</div>}
     <PageHeading eyebrow="Working safely and professionally" title={guidance?.title || "Student guidance"} subtitle={guidance?.subtitle || "A few principles for supporting your fellow students."}>
-      {canManageContent && <Button colorPalette="ekc" variant="outline" onClick={onEdit}>Edit guidance</Button>}
+      {canManageContent && <Button colorPalette="brand" variant="outline" onClick={onEdit}>Edit guidance</Button>}
     </PageHeading>
     <section className="panel guidance"><Heading size="md" mb="5">How we work</Heading><div className="principles">{principles.map(({ heading, text }, index) => <div key={`${heading}-${index}`}><b>{heading}</b><p>{text}</p></div>)}</div><div className="notice">Follow school guidance and stay within your training. If in doubt, ask a staff member.</div></section>
   </>;
@@ -315,7 +315,6 @@ function GuideCard({ guide, onOpen, onEdit }) {
     </article>
   );
 }
-
 
 
 
